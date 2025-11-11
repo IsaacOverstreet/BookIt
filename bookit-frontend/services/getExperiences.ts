@@ -12,18 +12,25 @@ export interface ExperienceType {
   createdAt: string;
 }
 
+interface ExperienceParams {
+  page?: number;
+  limit?: number;
+}
+
 export async function fetchExperience(
-  page: number,
-  limit: number
+  params: ExperienceParams = {}
 ): Promise<ExperienceType[]> {
-  console.log("🚀 ~ limit:", limit);
-  console.log("🚀 ~ page:", page);
+  const { page = 1, limit = 10 } = params;
+  console.log("redasa");
+  console.log("🚀 ~ experienceFunction:", limit);
+  console.log("experienceFunction", page);
   console.log("i go here");
 
   try {
     const res = await axios.get<ExperienceType[]>(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/experiences?page=${page}&limit=${limit}`
     );
+
     return res.data;
   } catch (error) {
     console.log(error);

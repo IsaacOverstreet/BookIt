@@ -6,6 +6,7 @@ interface Pagination {
   onPageChange: (page: number) => void;
 }
 export default function Pagination({ currentPage, onPageChange }: Pagination) {
+  console.log("currentPage", currentPage);
   return (
     <div className="flex items-center justify-center gap-4 py-6 w-full border ">
       <Button

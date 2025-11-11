@@ -4,7 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import Footer from "@/components/footer";
 import { ToastContainer } from "react-toastify";
-import { ReactQueryProvider } from "./providers/ReactQueryProvider";
+import ReactQueryProvider from "./providers/ReactQueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
