@@ -16,6 +16,7 @@ interface Props {
 export default async function Home({ searchParams }: Props) {
   const params = await searchParams;
   const page = Number(params.page) || 1;
+  console.log("🚀 ~ Home ~ page:", page);
   const limit = Number(params.limit) || 10;
 
   const queryClient = new QueryClient();
