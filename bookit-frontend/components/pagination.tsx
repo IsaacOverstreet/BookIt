@@ -5,8 +5,13 @@ import { useRouter } from "next/navigation";
 interface Pagination {
   currentPage: number;
   onPageChange: (page: number) => void;
+  totalPage: number;
 }
-export default function Pagination({ currentPage, onPageChange }: Pagination) {
+export default function Pagination({
+  currentPage,
+  onPageChange,
+  totalPage,
+}: Pagination) {
   const router = useRouter();
   function scrollToTop() {
     setTimeout(() => {
@@ -49,6 +54,7 @@ export default function Pagination({ currentPage, onPageChange }: Pagination) {
 
       <Button
         onClick={nextPage}
+        disabled={currentPage === totalPage}
         variant="outline"
         className="flex items-center gap-2 rounded-full px-6 py-2 text-sm font-medium transition-all duration-200 hover:bg-gray-100 hover:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
       >

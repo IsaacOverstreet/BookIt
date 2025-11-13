@@ -17,24 +17,28 @@ interface ExperienceParams {
   limit?: number;
 }
 
+export interface DataType {
+  experience: ExperienceType[];
+  totalPage: number;
+}
+
 export async function fetchExperience(
   params: ExperienceParams = {}
-): Promise<ExperienceType[]> {
+): Promise<DataType> {
   const { page = 1, limit = 10 } = params;
-  console.log("redasa");
-  console.log("🚀 ~ experienceFunction:", limit);
-  console.log("experienceFunction", page);
-  console.log("i go here");
 
   try {
-    const res = await axios.get<ExperienceType[]>(
+    const res = await axios.get<DataType>(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/experiences?page=${page}&limit=${limit}`
     );
-
-    return res.data;
+    const result = res.data;
+    return result;
   } catch (error) {
     console.log(error);
     toast.error("Failed to fetch experiences");
-    return [];
+    return {
+      experience: [],
+      totalPage: 0,
+    };
   }
 }

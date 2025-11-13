@@ -6,12 +6,16 @@ export class ExperiencesService {
   constructor(private prisma: PrismaService) {}
 
   async getAllExperiences({ skip, take }: { skip: number; take: number }) {
-    const experiences = await this.prisma.experience.findMany({
+    const experience = await this.prisma.experience.findMany({
       skip,
       take,
       orderBy: { title: 'asc' },
     });
-    return experiences;
+    const total = await this.prisma.experience.count();
+    console.log('🚀 ~ ExperiencesService ~ getAllExperiences ~ total:', total);
+
+    const totalPage = total / take;
+    return { experience, totalPage };
   }
 
   async getExperienceById(id: string) {
