@@ -1,8 +1,11 @@
 "use client";
 
+import { getExperienceById } from "@/services/getExperiences";
 import Image, { StaticImageData } from "next/image";
+import { useRouter } from "next/navigation";
 
 interface CardProps {
+  id: string;
   title: string;
   location: string;
   description: string;
@@ -11,12 +14,15 @@ interface CardProps {
 }
 
 export default function Card({
+  id,
   title,
   location,
   description,
   price,
   image,
 }: CardProps) {
+  const router = useRouter();
+
   return (
     <div className="w-full sm:w-[48%] md:w-[48.3%] lg:w-[31.4%] xl:w-[23.6%] rounded-xl bg-[#F0F0F0] overflow-hidden shadow-md">
       <div className="relative w-full aspect-280/170">
@@ -55,7 +61,10 @@ export default function Card({
               ${price}
             </p>
           </div>
-          <button className="bg-[#FFD643] rounded-sm px-2 py-1 font-inter font-medium text-[14px] leading-[18px] tracking-[0%]">
+          <button
+            onClick={() => router.push(`/details/${id}`)}
+            className="bg-[#FFD643] rounded-sm px-2 py-1 font-inter font-medium text-[14px] leading-[18px] tracking-[0%]"
+          >
             View Details
           </button>
         </div>

@@ -14,33 +14,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model Experience {
-  id          String   @id @default(uuid())
+  id          String        @id @default(uuid())
   title       String
-  location String
+  location    String
   description String
   image       String
-  price       Int        // in cents
-  createdAt   DateTime   @default(now())
-  slots       Slot[]
+  price       Int
+  tax         Float
+  createdAt   DateTime      @default(now())
+
+  dates       ExperienceDate[]
 }
 
-model Slot {
-  id           String      @id @default(uuid())
-  experience   Experience  @relation(fields: [experienceId], references: [id])
-  experienceId String
-  date         DateTime    // Only the date
-  time         String      // "HH:mm" format
-  capacity     Int         // available seats
-  bookings     Booking[]
+model ExperienceDate {
+  id            String          @id @default(uuid())
+  date          DateTime
+  experienceId  String
+  experience    Experience      @relation(fields: [experienceId], references: [id])
 
-  @@unique([experienceId, date, time]) // one slot per experience/date/time
-  @@index([experienceId, date])
+  times         ExperienceTime[]
+}
+
+model ExperienceTime {
+  id           String         @id @default(uuid())
+  time         String
+  dateId       String
+  date         ExperienceDate @relation(fields: [dateId], references: [id])
+
+  slots        ExperienceSlot[]
+}
+
+model ExperienceSlot {
+  id         String         @id @default(uuid())
+  capacity   Int
+  timeId     String
+  time       ExperienceTime @relation(fields: [timeId], references: [id])
+   bookings Booking[]  
 }
 
 model Booking {
   id         String   @id @default(uuid())
-  slot       Slot     @relation(fields: [slotId], references: [id])
+  slot       ExperienceSlot     @relation(fields: [slotId], references: [id])
   slotId     String
   userName   String
   userEmail  String

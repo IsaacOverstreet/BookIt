@@ -44,3 +44,20 @@ export const BookingSchema = z.object({
   promo: z.string().min(3, { message: 'Invalid promo code' }).optional(),
 });
 export type BookingSchemaType = z.infer<typeof BookingSchema>;
+
+export const searchSchema = z
+  .string()
+  .trim()
+
+  .min(1, { message: 'Search is required.' })
+
+  .refine((s) => (s.match(/[A-Za-z]/g) ?? []).length >= 2, {
+    message: 'Search must contain at least 2 letters.',
+  })
+
+  .regex(/^[A-Za-z\s]+$/, {
+    message:
+      'Search may contain only letters and spaces (no code, numbers, or symbols).',
+  });
+
+export type SearchInput = z.infer<typeof searchSchema>;

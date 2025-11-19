@@ -1,5 +1,13 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { ExperiencesService } from './experiences.service';
+import { searchSchema } from '../../lib/validator';
+import { ZodError } from 'zod';
 
 @Controller('experiences')
 export class ExperiencesController {
@@ -15,6 +23,35 @@ export class ExperiencesController {
     const skip = (pageNum - 1) * limitNum;
 
     return this.experiencesServices.getAllExperiences({ skip, take: limitNum });
+  }
+
+  @Get('search')
+  async searchExperience(@Query('search') search: string) {
+    try {
+      console.log('search', search);
+      const validate = searchSchema.parse(search);
+      const res =
+        await this.experiencesServices.getExperienceBySearch(validate);
+      return {
+        success: true,
+        data: res,
+      };
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new BadRequestException({
+          success: false,
+          type: 'VALIDATION ERROR',
+          message: 'invalid search input',
+          errors: error.issues,
+        });
+      } else {
+        throw new BadRequestException({
+          success: false,
+          type: 'Network Error',
+          message: 'Something went wrong',
+        });
+      }
+    }
   }
 
   @Get(':id')

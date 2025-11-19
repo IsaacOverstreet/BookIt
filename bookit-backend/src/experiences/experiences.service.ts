@@ -21,7 +21,7 @@ export class ExperiencesService {
   async getExperienceById(id: string) {
     const data = await this.prisma.experience.findUnique({
       where: { id },
-      include: { slots: true },
+      include: {},
     });
     const tax = 0.075;
     if (!data) throw new BadRequestException('Failed to get experience');
@@ -29,5 +29,17 @@ export class ExperiencesService {
       ...data,
       tax,
     };
+  }
+
+  async getExperienceBySearch(search: string) {
+    const data = await this.prisma.experience.findMany({
+      where: {
+        title: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+    });
+    return data;
   }
 }

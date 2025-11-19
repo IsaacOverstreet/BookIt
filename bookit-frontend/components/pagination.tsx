@@ -37,7 +37,7 @@ export default function Pagination({
   }
   console.log("currentPage", currentPage);
   return (
-    <div className="flex items-center justify-center gap-4 py-6 w-full border ">
+    <div className="flex items-center justify-center gap-4 py-6 w-full">
       <Button
         onClick={prevPage}
         disabled={currentPage === 1}

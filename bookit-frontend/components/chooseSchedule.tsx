@@ -1,18 +1,21 @@
+import { ExperienceByIdType } from "@/services/getExperiences";
 import DatePicker from "./datePicker";
 import TimePickerWithSlots from "./timeSelector";
 
-export default function ChooseSchedule() {
+interface ScheduleProp {
+  details: ExperienceByIdType;
+}
+
+export default function ChooseSchedule({ details }: ScheduleProp) {
   return (
     <div className="mb-2.5 w-full max-w-[765px] flex flex-col gap-6 py-4 sm:py-6 md:py-8 ">
       {/* Header Section */}
       <div className="w-full flex flex-col gap-2">
         <h3 className="font-inter font-medium text-[20px] sm:text-[22px] md:text-[24px] leading-8 text-black">
-          Kayaking
+          {details.title}
         </h3>
         <p className="font-inter font-normal text-[14px] sm:text-[15px] md:text-[16px] leading-6 text-[#6C6C6C]">
-          Curated small-group experience. Certified guide. Safety first with
-          gear included. Helmet and Life jackets along with an expert will
-          accompany in kayaking.
+          {details.description}
         </p>
       </div>
 
@@ -24,7 +27,7 @@ export default function ChooseSchedule() {
             <h3 className="font-inter font-medium text-[16px] sm:text-[17px] md:text-[18px] leading-[22px] text-black">
               Choose date
             </h3>
-            <DatePicker />
+            <DatePicker details={details} />
           </div>
 
           {/* Time Picker with Slots */}

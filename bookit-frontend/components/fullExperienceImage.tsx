@@ -1,10 +1,14 @@
+import { ExperienceByIdType } from "@/services/getExperiences";
 import Image from "next/image";
-import sample from "../public/sample.png";
-export default function FullExperienceImage() {
+
+interface ImageProp {
+  details: ExperienceByIdType;
+}
+export default function FullExperienceImage({ details }: ImageProp) {
   return (
     <div className="w-full  h-[300px] sm:h-[300px] md:h-[350px] lg:h-[381px] rounded-xl overflow-hidden ">
       <Image
-        src={sample}
+        src={details.image}
         alt="sample"
         width={765}
         height={381}

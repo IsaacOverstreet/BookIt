@@ -20,24 +20,20 @@ export default function ExperienceList({
   limit,
 }: ExperienceData) {
   const [page, setPage] = useState(initialPage);
-  console.log("exp", page);
-  console.log("exp", limit);
 
   const { data } = useQuery<DataType>({
     queryKey: ["experiences", { page, limit }],
     queryFn: () => fetchExperience({ page, limit }),
     initialData: page === initialPage ? initialData : undefined,
-
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
   });
   const { experience = [], totalPage = 1 } = data || {};
 
   return (
-    <div className="border flex w-full flex-wrap  gap-5.5   min-h-dvh mt-[50px] ">
+    <div className="flex w-full flex-wrap  gap-5.5   min-h-dvh mt-[50px] ">
       {experience?.map((exp) => (
         <Card
           key={exp.id}
+          id={exp.id}
           title={exp.title}
           location={exp.location}
           description={exp.description}

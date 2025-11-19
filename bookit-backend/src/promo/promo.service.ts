@@ -10,26 +10,26 @@ export class PromoService {
   //apply promo
   async applypromo(body: ApplyPromoSchemaType) {
     const { slotId, quantity, promo } = body;
-    return await this.prisma.$transaction(async (tx) => {
-      const { slot, experience } = await getSlotAndExperience(tx, slotId);
+    // return await this.prisma.$transaction(async (tx) => {
+    //   const { slot, experience } = await getSlotAndExperience(tx, slotId);
 
-      if (quantity > slot.capacity)
-        throw new BadRequestException('Not enough seats available');
+    //   if (quantity > slot.capacity)
+    //     throw new BadRequestException('Not enough seats available');
 
-      // ✅ Use helper to calculate total
-      const total = calculateTotals({
-        price: experience.price,
-        quantity,
-        promo,
-      });
+    //   // ✅ Use helper to calculate total
+    //   const total = calculateTotals({
+    //     price: experience.price,
+    //     quantity,
+    //     promo,
+    //   });
 
-      return {
-        title: experience.title,
-        date: slot.date,
-        time: slot.time,
-        quantity,
-        ...total, // includes subTotal, discount, taxAmount, total
-      };
-    });
+    //   return {
+    //     title: experience.title,
+    //     date: slot.date,
+    //     time: slot.time,
+    //     quantity,
+    //     ...total, // includes subTotal, discount, taxAmount, total
+    //   };
+    // });
   }
 }

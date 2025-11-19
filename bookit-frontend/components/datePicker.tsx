@@ -1,7 +1,12 @@
 "use client";
+import { ExperienceByIdType } from "@/services/getExperiences";
 import { useState } from "react";
 
-export default function DatePicker() {
+interface dateProp {
+  details: ExperienceByIdType;
+}
+
+export default function DatePicker({ details }: dateProp) {
   const availableDates = [
     "2025-10-28",
     "2025-10-29",
@@ -13,8 +18,8 @@ export default function DatePicker() {
 
   return (
     <div className="flex flex-wrap gap-2 sm:gap-3">
-      {availableDates.map((dateStr) => {
-        const date = new Date(dateStr);
+      {details.slots.map((slot) => {
+        const date = new Date(slot.date);
         const formatted = date.toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
@@ -22,11 +27,11 @@ export default function DatePicker() {
 
         return (
           <div
-            key={dateStr}
-            onClick={() => setSelectedDate(dateStr)}
+            key={slot.id}
+            onClick={() => setSelectedDate(slot.date)}
             className={`h-[34px] px-3 py-2 min-w-[60px] sm:min-w-[70px] flex items-center justify-center rounded-sm cursor-pointer transition text-sm
           ${
-            selectedDate === dateStr
+            selectedDate === slot.date
               ? "bg-[#FFD643] text-black"
               : "bg-[#F9F9F9] border border-[#BDBDBD] text-[#838383] hover:bg-gray-300"
           }`}
