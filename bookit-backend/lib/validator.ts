@@ -45,6 +45,7 @@ export const BookingSchema = z.object({
 });
 export type BookingSchemaType = z.infer<typeof BookingSchema>;
 
+//search schema
 export const searchSchema = z
   .string()
   .trim()

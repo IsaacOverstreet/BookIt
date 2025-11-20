@@ -14,15 +14,24 @@ export class ExperiencesService {
     const total = await this.prisma.experience.count();
     console.log('🚀 ~ ExperiencesService ~ getAllExperiences ~ total:', total);
 
-    const totalPage = total / take;
+    const totalPage = Math.ceil(total / take);
     return { experience, totalPage };
   }
 
   async getExperienceById(id: string) {
     const data = await this.prisma.experience.findUnique({
       where: { id },
-      include: {},
+      include: {
+        dates: {
+          include: {
+            times: {
+              include: { slots: true },
+            },
+          },
+        },
+      },
     });
+
     const tax = 0.075;
     if (!data) throw new BadRequestException('Failed to get experience');
     return {
