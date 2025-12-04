@@ -3,8 +3,10 @@ import image from "../public/attachment.png";
 import Link from "next/link";
 import Image from "next/image";
 import { Search } from "./search";
+import { useState } from "react";
 
 export const Navbar = () => {
+  const [searchbar, setSearchbarterm] = useState("");
   return (
     <nav className="w-full flex justify-between items-center bg-[#F9F9F9] shadow-lg fixed top-0 z-50 h-[87px] px-4 sm:px-6 md:px-12 lg:px-24">
       {/* Logo / Brand */}
@@ -22,7 +24,7 @@ export const Navbar = () => {
 
       {/* Search component */}
       <div className="flex-1 max-w-[500px] ml-4">
-        <Search />
+        <Search searchbar={searchbar} setSearchbarterm={setSearchbarterm} />
       </div>
     </nav>
   );

@@ -1,6 +1,7 @@
-import axios from "axios";
-
+import axios, { AxiosError } from "axios";
+import { z, ZodError } from "zod";
 import { toast } from "react-toastify";
+import { handleApiError } from "@/lib/handleError";
 
 export interface ExperienceType {
   id: string;
@@ -15,6 +16,7 @@ export interface ExperienceType {
 interface ExperienceParams {
   page?: number;
   limit?: number;
+  searchTerm?: string;
 }
 
 export interface DataType {
@@ -22,28 +24,58 @@ export interface DataType {
   totalPage: number;
 }
 
+export const OnlyLettersSchema = z
+  .string()
+  .trim()
+  .regex(/^\p{L}+$/u, {
+    message: "Only letters are allowed (no spaces, numbers or punctuation).",
+  });
+
+//FETCH ALL EXPERIENCES AND FETCH EXPERIENCE BY SEARCH
 export async function fetchExperience(
   params: ExperienceParams = {}
 ): Promise<DataType> {
-  const { page = 1, limit = 10 } = params;
+  const { page = 1, limit = 10, searchTerm } = params;
+  console.log("🚀 ~ params:", params);
+  console.log("🚀 ~ searchTerm:", searchTerm);
 
   try {
-    const res = await axios.get<DataType>(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/experiences?page=${page}&limit=${limit}`
-    );
-    const result = res.data;
+    if (!searchTerm) {
+      const res = await axios.get<DataType>(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/experiences?page=${page}&limit=${limit}`
+      );
+      const result = res.data;
 
-    return result;
-  } catch (error) {
-    console.log(error);
-    toast.error("Failed to fetch experiences");
-    return {
-      experience: [],
-      totalPage: 0,
-    };
+      return result;
+    } else {
+      const validated = OnlyLettersSchema.parse(searchTerm);
+      console.log("🚀 ~ validated:", validated);
+      const res = await axios.get<DataType>(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/experiences/search?searchParam=${validated}&page=${page}&limit=${limit}`
+      );
+      console.log("🚀 ~ res:", res);
+      const result = res.data;
+      console.log("🚀 ~ result:", result);
+
+      return result;
+    }
+  } catch (error: unknown) {
+    // if (error instanceof ZodError) {
+    //   error.issues.forEach((err) => {
+    //     toast.error(err.message);
+    //   });
+    //   console.log(error);
+    // } else if (axios.isAxiosError(error)) {
+    //   toast.error(error.response?.data?.message || "Request failed");
+    // } else {
+    //   console.log("Unknown error:", error);
+    //   toast.error("Something went wrong");
+    // }
+    handleApiError(error);
   }
 }
 
+//EXPEREINCE ID DATA
 export interface ExperienceByIdType {
   id: string;
   title: string;
@@ -51,17 +83,30 @@ export interface ExperienceByIdType {
   description: string;
   image: string;
   price: number;
-  createdAt: string; // or Date if serialized
-  slots: Slot[];
   tax: number;
+  quantity: number;
+  createdAt: string; // or Date if you convert
+  dates: ExperienceDate[];
+}
+
+export interface ExperienceDate {
+  id: string;
+  date: string; // ISO string
+  experienceId: string;
+  times: ExperienceTime[];
+}
+
+export interface ExperienceTime {
+  id: string;
+  time: string; // "09:00"
+  dateId: string;
+  slots: Slot[];
 }
 
 export interface Slot {
   id: string;
-  experienceId: string;
-  date: string; // ISO string
-  time: string; // "09:00", "11:30", etc
   capacity: number;
+  timeId: string;
 }
 
 export async function getExperienceById(
@@ -78,13 +123,27 @@ export async function getExperienceById(
 
     return result;
   } catch (err) {
-    if (axios.isAxiosError(err)) {
-      // Backend or network error
-      throw new Error(err.response?.data?.error || err.message);
-    } else if (err instanceof Error) {
-      throw err;
-    } else {
-      throw new Error("An unknown error occurred");
-    }
+    handleApiError(err);
   }
 }
+
+// export async function getExperienceBySearch(
+//   params: string
+// ): Promise<ExperienceType> {
+//   try {
+//     const parsed = onlyLettersSchema.parse(params);
+
+//     const res = await axios.get<ExperienceType>(
+//       `${process.env.NEXT_PUBLIC_BACKEND_URL}/experiences/search?searchParam=${parsed}`
+//     );
+//     if (!res.data) throw new Error("Experience not found!");
+//     return res.data;
+//   } catch (error) {
+//     if (axios.isAxiosError(error)) {
+//       throw new Error(error.response?.data?.error || error.message);
+//     } else if (error instanceof ZodError) {
+//       toast.error("invalid search input");
+//       throw new Error("invalid search input");
+//     } else throw new Error("An unknown error occurred");
+//   }
+// }

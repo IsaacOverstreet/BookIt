@@ -8,24 +8,29 @@ import {
 } from "@/services/getExperiences";
 import Pagination from "./pagination";
 import Card from "./card";
+import Loading from "./loadingPage";
 
 interface ExperienceData {
   initialData?: DataType;
   initialPage: number;
   limit: number;
+  searchTerm?: string;
 }
 export default function ExperienceList({
   initialData,
   initialPage,
   limit,
+  searchTerm,
 }: ExperienceData) {
   const [page, setPage] = useState(initialPage);
 
-  const { data } = useQuery<DataType>({
-    queryKey: ["experiences", { page, limit }],
-    queryFn: () => fetchExperience({ page, limit }),
+  const { data, isLoading } = useQuery<DataType>({
+    queryKey: ["experiences", { page, limit, searchTerm }],
+    queryFn: () => fetchExperience({ page, limit, searchTerm }),
     initialData: page === initialPage ? initialData : undefined,
   });
+
+  if (isLoading) return <Loading />;
   const { experience = [], totalPage = 1 } = data || {};
 
   return (

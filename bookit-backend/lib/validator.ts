@@ -5,7 +5,7 @@ const uuidRegex =
 
 //preview schema
 export const PreviewSchema = z.object({
-  slotId: z.string().regex(uuidRegex, { message: 'Invalid slot ID format' }),
+  timeId: z.string().regex(uuidRegex, { message: 'Invalid slot ID format' }),
   quantity: z.preprocess(
     (val) => Number(val),
     z.number().int().positive({ message: 'Quantity must be positive' }),

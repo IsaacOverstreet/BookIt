@@ -1,12 +1,66 @@
 "use client";
+import { calculateTotalPrice } from "@/services/bookingLogic";
+import { ExperienceByIdType } from "@/services/getExperiences";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
-export default function OrderSummary() {
+interface OrderSummaryProp {
+  details: ExperienceByIdType;
+  timeId: string;
+}
+export default function OrderSummary({ details, timeId }: OrderSummaryProp) {
   const [quantity, setQuantity] = useState(1);
+  const [subtotalPrice, setSubTotalPrice] = useState(details.price);
+
+  const tax = subtotalPrice * (details.tax / 100);
+  const initialTotal = subtotalPrice + tax;
+  const [totalPrice, setTotalPrice] = useState(initialTotal);
+
+  const router = useRouter();
+
   const handleDecrement = () => {
-    if (quantity > 1) setQuantity(quantity - 1);
+    if (quantity > 1) {
+      setQuantity((prev) => {
+        const newQty = prev - 1;
+        const newSubtotal = details.price * newQty;
+        const newTax = newSubtotal * (details.tax / 100);
+        const newTotal = newSubtotal + newTax;
+
+        setSubTotalPrice(newSubtotal);
+        setTotalPrice(newTotal);
+        return newQty;
+      });
+    }
   };
-  const handleIncrement = () => setQuantity(quantity + 1);
+  const handleIncrement = () => {
+    if (quantity === details.quantity) return;
+    setQuantity((prev) => {
+      const newQty = prev + 1;
+      const newSubtotal = details.price * newQty;
+      const newTax = newSubtotal * (details.tax / 100);
+      const newTotal = newTax + newSubtotal;
+
+      setSubTotalPrice(newSubtotal);
+      setTotalPrice(newTotal);
+      return newQty;
+    });
+  };
+
+  const handleConfirm = async () => {
+    const payload = {
+      timeId,
+      quantity,
+    };
+
+    console.log("payload", payload);
+
+    const res = await calculateTotalPrice(payload);
+    console.log("🚀 ~ handleConfirm ~ res:", res);
+    if (res.success === true) {
+      router.push("/checkout");
+    }
+  };
 
   return (
     <div className="w-full md:w-full lg:w-[387px]  h-auto md:h-[350px] sm:h-[303px] rounded-xl flex flex-col gap-6 p-4 sm:p-6 bg-[#EFEFEF] shadow-md">
@@ -19,7 +73,7 @@ export default function OrderSummary() {
               Starts at
             </p>
             <p className="font-inter font-medium text-[15px] sm:text-[16px] leading-5 text-black">
-              $120
+              ${details.price}
             </p>
           </div>
 
@@ -53,7 +107,7 @@ export default function OrderSummary() {
               Subtotal
             </p>
             <p className="font-inter font-medium text-[15px] sm:text-[16px] leading-5 text-black">
-              $120
+              ${subtotalPrice}
             </p>
           </div>
 
@@ -63,7 +117,7 @@ export default function OrderSummary() {
               Taxes
             </p>
             <p className="font-inter font-medium text-[15px] sm:text-[16px] leading-5 text-black">
-              $120
+              %{details.tax}
             </p>
           </div>
 
@@ -78,12 +132,15 @@ export default function OrderSummary() {
           Total
         </p>
         <p className="font-inter font-semibold text-[18px] sm:text-[20px] leading-6 text-black">
-          $120
+          ${totalPrice}
         </p>
       </div>
 
       {/* Confirm Button */}
-      <button className="w-full h-11 rounded-lg flex items-center justify-center gap-2.5 px-5 py-3 bg-[#FFD643] hover:bg-[#FFD643] transition">
+      <button
+        onClick={handleConfirm}
+        className="w-full h-11 rounded-lg flex items-center justify-center gap-2.5 px-5 py-3 bg-[#FFD643] hover:bg-[#FFD643] transition"
+      >
         <p className="font-inter font-medium text-[15px] sm:text-[16px] leading-5 text-gray-600">
           Confirm
         </p>

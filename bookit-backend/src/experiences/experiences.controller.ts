@@ -26,16 +26,25 @@ export class ExperiencesController {
   }
 
   @Get('search')
-  async searchExperience(@Query('search') search: string) {
+  async searchExperience(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+    @Query('searchParam') search: string,
+  ) {
     try {
       console.log('search', search);
-      const validate = searchSchema.parse(search);
-      const res =
-        await this.experiencesServices.getExperienceBySearch(validate);
-      return {
-        success: true,
-        data: res,
-      };
+      const pageNum = parseInt(page) || 1;
+      const limitNum = parseInt(limit) || 10;
+      const skip = (pageNum - 1) * limitNum;
+
+      const validatedSearch = searchSchema.parse(search);
+      const res = this.experiencesServices.getExperienceBySearch({
+        take: limitNum,
+        validatedSearch,
+        skip,
+      });
+
+      return res;
     } catch (error) {
       if (error instanceof ZodError) {
         throw new BadRequestException({

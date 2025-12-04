@@ -1,12 +1,35 @@
 import { ExperienceByIdType } from "@/services/getExperiences";
 import DatePicker from "./datePicker";
-import TimePickerWithSlots from "./timeSelector";
+import { useState } from "react";
+import TimeSelector from "./timeSelector";
 
 interface ScheduleProp {
   details: ExperienceByIdType;
+  onSetTimeId: React.Dispatch<React.SetStateAction<string>>;
+  onShowSummary: React.Dispatch<React.SetStateAction<boolean>>;
+}
+export interface SelectDateType {
+  id?: string;
+  time?: string;
+  dateId?: string;
+  slots?: Slot[];
 }
 
-export default function ChooseSchedule({ details }: ScheduleProp) {
+export interface Slot {
+  id: string;
+  capacity: number;
+  timeId: string;
+}
+
+export default function ChooseSchedule({
+  details,
+  onShowSummary,
+  onSetTimeId,
+}: ScheduleProp) {
+  const [currentSelection, SetCurrentSelection] = useState<SelectDateType[]>(
+    []
+  );
+
   return (
     <div className="mb-2.5 w-full max-w-[765px] flex flex-col gap-6 py-4 sm:py-6 md:py-8 ">
       {/* Header Section */}
@@ -27,7 +50,11 @@ export default function ChooseSchedule({ details }: ScheduleProp) {
             <h3 className="font-inter font-medium text-[16px] sm:text-[17px] md:text-[18px] leading-[22px] text-black">
               Choose date
             </h3>
-            <DatePicker details={details} />
+            <DatePicker
+              details={details}
+              currentSelection={currentSelection}
+              onCurrentSelection={SetCurrentSelection}
+            />
           </div>
 
           {/* Time Picker with Slots */}
@@ -35,7 +62,12 @@ export default function ChooseSchedule({ details }: ScheduleProp) {
             <h3 className="font-inter font-medium text-[16px] sm:text-[17px] md:text-[18px] leading-[22px] text-black">
               Choose time
             </h3>
-            <TimePickerWithSlots />
+            <TimeSelector
+              details={details}
+              currentSelection={currentSelection}
+              onShowSummary={onShowSummary}
+              onSetTimeId={onSetTimeId}
+            />
           </div>
 
           <p className="font-inter font-normal text-[12px] leading-4 text-[#838383]">

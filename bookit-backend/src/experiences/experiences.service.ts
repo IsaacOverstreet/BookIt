@@ -25,30 +25,57 @@ export class ExperiencesService {
         dates: {
           include: {
             times: {
-              include: { slots: true },
+              include: {
+                _count: {
+                  select: { slots: true },
+                },
+                slots: true,
+              },
             },
           },
         },
       },
     });
+    const quantity = data?.dates[0].times[0]._count.slots;
 
-    const tax = 0.075;
+    const tax = 7.5;
     if (!data) throw new BadRequestException('Failed to get experience');
     return {
       ...data,
       tax,
+      quantity,
     };
   }
 
-  async getExperienceBySearch(search: string) {
-    const data = await this.prisma.experience.findMany({
+  async getExperienceBySearch({
+    skip,
+    take,
+    validatedSearch,
+  }: {
+    skip: number;
+    take: number;
+    validatedSearch: string;
+  }) {
+    console.log(skip);
+    console.log(take);
+    console.log(validatedSearch);
+    const experience = await this.prisma.experience.findMany({
       where: {
         title: {
-          contains: search,
+          contains: validatedSearch,
           mode: 'insensitive',
         },
       },
+      skip,
+      take,
+      orderBy: { title: 'asc' },
     });
-    return data;
+    console.log('🚀 ~ ExperiencesService ~ experience:', experience);
+    const total = await this.prisma.experience.count();
+    console.log('🚀 ~ ExperiencesService ~ getAllExperiences ~ total:', total);
+
+    const totalPage = Math.ceil(total / take);
+    console.log('🚀 ~ ExperiencesService ~ totalPage:', totalPage);
+    return { experience, totalPage };
   }
 }

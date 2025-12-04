@@ -11,19 +11,27 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import NotFound from "@/components/notFound";
+import Loading from "@/components/loadingPage";
+import { useState } from "react";
+
 interface Params {
   id: string;
 }
 
 export default function Details({ id }: Params) {
+  const [showSummary, setShowSummary] = useState(false);
+  const [timeId, setTimeId] = useState("");
+
   const { data, error, isLoading } = useQuery<ExperienceByIdType>({
     queryKey: ["details", id],
     queryFn: () => getExperienceById(id),
     enabled: !!id,
   });
-  const details = data;
-  console.log(data);
 
+  const details = data;
+  console.log(details);
+
+  if (isLoading) return <Loading />;
   if (!details) return <NotFound />;
 
   return (
@@ -41,10 +49,14 @@ export default function Details({ id }: Params) {
           {/* Image + Order Summary */}
           <div className="flex flex-col ">
             <FullExperienceImage details={details} />
-            <ChooseSchedule details={details} />
+            <ChooseSchedule
+              onSetTimeId={setTimeId}
+              onShowSummary={setShowSummary}
+              details={details}
+            />
           </div>
           {/* Schedule Section */}
-          <OrderSummary details={details} />
+          {showSummary && <OrderSummary timeId={timeId} details={details} />}
         </div>
       </div>
     </div>
