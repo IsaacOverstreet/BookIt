@@ -14,18 +14,29 @@ export default function DatePicker({
   onCurrentSelection,
   currentSelection,
 }: dateProp) {
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const savedDate = localStorage.getItem("selectedDate");
+
+  const [selectedDate, setSelectedDate] = useState<string | null>(
+    savedDate || null
+  );
+
+  console.log("🚀 ~ selectedDate:", selectedDate);
 
   function handleOnClick(id: string) {
     console.log("currentSelection", currentSelection);
+
     setSelectedDate(id);
+    console.log("selectedDate", selectedDate);
 
     const found = details?.dates?.find((t) => t.id === id);
 
     const times = found?.times ?? [];
     console.log("🚀 ~ handleOnClick ~ newSelect:", times);
+
     onCurrentSelection(times);
-    console.log("🚀 ~ DatePicker ~ currentSelection:", currentSelection);
+
+    localStorage.setItem("currentDatesSelection", JSON.stringify(times));
+    localStorage.setItem("selectedDate", id);
   }
 
   return (

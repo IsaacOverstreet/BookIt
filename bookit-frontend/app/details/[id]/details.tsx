@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import NotFound from "@/components/notFound";
 import Loading from "@/components/loadingPage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Params {
   id: string;
@@ -20,7 +20,16 @@ interface Params {
 
 export default function Details({ id }: Params) {
   const [showSummary, setShowSummary] = useState(false);
+
   const [timeId, setTimeId] = useState("");
+
+  useEffect(() => {
+    const savedSummary = localStorage.getItem("showSummary");
+    if (savedSummary !== null) setShowSummary(JSON.parse(savedSummary));
+
+    const savedTime = localStorage.getItem("selectedTime");
+    if (savedTime) setTimeId(savedTime);
+  }, []);
 
   const { data, error, isLoading } = useQuery<ExperienceByIdType>({
     queryKey: ["details", id],

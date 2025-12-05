@@ -26,9 +26,15 @@ export default function ChooseSchedule({
   onShowSummary,
   onSetTimeId,
 }: ScheduleProp) {
-  const [currentSelection, SetCurrentSelection] = useState<SelectDateType[]>(
-    []
+  const savedSelection = JSON.parse(
+    localStorage.getItem("currentDatesSelection") || "null"
   );
+  console.log("🚀 ~ savedSelection:", savedSelection);
+  const [currentSelection, SetCurrentSelection] = useState<SelectDateType[]>(
+    savedSelection || []
+  );
+
+  console.log("🚀 ~ currentSelection:", currentSelection);
 
   return (
     <div className="mb-2.5 w-full max-w-[765px] flex flex-col gap-6 py-4 sm:py-6 md:py-8 ">

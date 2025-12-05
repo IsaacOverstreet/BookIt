@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SelectDateType } from "./chooseSchedule";
 import { ExperienceByIdType } from "@/services/getExperiences";
 
@@ -15,20 +15,19 @@ export default function TimeSelector({
   onShowSummary,
   onSetTimeId,
 }: TimeProp) {
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const savedTime = localStorage.getItem("selectedTime");
+
+  const [selectedTime, setSelectedTime] = useState<string | null>(
+    savedTime || null
+  );
 
   const handleSelect = (id: string) => {
+    if (!id) return;
     onShowSummary(true);
     onSetTimeId(id);
-
-    const newSelectedTime = details.dates
-      .flatMap((d) => d.times)
-      .find((t) => t.id === id);
-
-    const timeId = newSelectedTime?.id;
-    console.log("🚀 ~ handleSelect ~ time:", timeId);
-    if (!timeId) return;
-    setSelectedTime(timeId);
+    setSelectedTime(id);
+    localStorage.setItem("selectedTime", id);
+    localStorage.setItem("showSummary", JSON.stringify(true));
   };
 
   return (
