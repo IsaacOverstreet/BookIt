@@ -1,7 +1,37 @@
 import CheckOutForm from "@/components/checkOutForm";
 import { ArrowLeft } from "lucide-react";
 
-export default function Details() {
+interface CheckoutProps {
+  searchParams: { total?: string };
+}
+export interface CheckoutTotalType {
+  title: string;
+  date: string; // ISO date string
+  time: string; // "HH:MM"
+  quantity: number;
+  pricePerTicket: number;
+  subTotal: number;
+  taxRatePercent: number;
+  taxAmount: number;
+  total: number;
+  timeId: string;
+}
+export default async function Details({ searchParams }: CheckoutProps) {
+  const { total } = await searchParams;
+  console.log("🚀 ~ Details ~ total:", total);
+
+  if (!total) {
+    return <div>No data provided</div>;
+  }
+
+  const decoded = decodeURIComponent(total);
+  console.log("🚀 ~ Details ~ decoded:", decoded);
+  const data: CheckoutTotalType = JSON.parse(decoded);
+  console.log("🚀 ~ Details ~ data:", data);
+
+  // const data = JSON.parse(total);
+  // console.log("params", total);
+
   return (
     <div className=" flex flex-col w-full px-4 sm:px-[50px] lg:px-[50px] min-h-dvh mt-[100px]  xl:px-[150px]">
       <div className="w-full ">
@@ -13,7 +43,7 @@ export default function Details() {
           </h3>
         </div>
         <div>
-          <CheckOutForm />
+          <CheckOutForm checkoutTotal={data} />
         </div>
       </div>
     </div>

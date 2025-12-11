@@ -20,7 +20,8 @@ export class BookingService {
       if (quantity > capacity)
         throw new BadRequestException('Not enough seats available');
       const subTotal = experience.price * quantity;
-      const taxRate = 0.075;
+      const taxRatePercent = 7.5;
+      const taxRate = taxRatePercent / 100;
       const taxAmount = subTotal * taxRate;
       const total = taxAmount + subTotal;
       return {
@@ -30,45 +31,46 @@ export class BookingService {
         quantity,
         pricePerTicket: experience.price,
         subTotal,
-        taxRate,
+        taxRatePercent,
         taxAmount,
         total,
+        timeId,
       };
     });
   }
 
   //create booking
   async createBooking(body: BookingSchemaType) {
-    // const { slotId, quantity, userName, userEmail, promo } = body;
-    // const booking = await this.prisma.$transaction(async (tx) => {
-    //   const { slot, experience } = await getSlotAndExperience(tx, slotId);
-    //   if (quantity > slot.capacity)
-    //     throw new BadRequestException('Not enough seats available');
-    //   // ✅ Use helper to calculate total
-    //   const { total } = calculateTotals({
-    //     price: experience.price,
-    //     quantity,
-    //     promo,
-    //   });
-    //   await tx.slot.update({
-    //     where: { id: slotId },
-    //     data: { capacity: { decrement: quantity } },
-    //   });
-    //   return await tx.booking.create({
-    //     data: {
-    //       slotId,
-    //       userName,
-    //       userEmail,
-    //       quantity,
-    //       promoCode: promo ?? null,
-    //       totalPrice: total,
-    //     },
-    //   });
-    // });
-    // return {
-    //   success: true,
-    //   bookingId: booking.id,
-    //   totalPrice: Number(booking.totalPrice.toFixed(2)),
-    // };
+    const { timeId, quantity, userName, userEmail, promo } = body;
+    const booking = await this.prisma.$transaction(async (tx) => {
+      const { time, experience } = await getSlotAndExperience(tx, timeId);
+      const capacity = time.slots.length;
+      if (quantity > capacity)
+        throw new BadRequestException('Not enough seats available');
+      // ✅ Use helper to calculate total
+      const total = calculateTotals({
+        price: experience.price,
+        quantity,
+        promo,
+      });
+      const slotToDelete = time.slots.slice(0, quantity).map((slot) => slot.id);
+
+      await tx.experienceSlot.deleteMany({
+        where: { id: { in: slotToDelete } },
+      });
+      return await tx.booking.create({
+        data: {
+          userName,
+          userEmail,
+          quantity,
+          promoCode: promo ?? null,
+        },
+      });
+    });
+    return {
+      success: true,
+      bookingId: booking.id,
+      totalPrice: Number(booking.totalPrice.toFixed(2)),
+    };
   }
 }

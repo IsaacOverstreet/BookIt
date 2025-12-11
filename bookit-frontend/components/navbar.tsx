@@ -7,10 +7,13 @@ import { useState } from "react";
 
 export const Navbar = () => {
   const [searchbar, setSearchbarterm] = useState("");
+  function handleclick() {
+    localStorage.clear();
+  }
   return (
     <nav className="w-full flex justify-between items-center bg-[#F9F9F9] shadow-lg fixed top-0 z-50 h-[87px] px-4 sm:px-6 md:px-12 lg:px-24">
       {/* Logo / Brand */}
-      <Link href="/" className="shrink-0">
+      <Link href="/" onClick={handleclick} className="shrink-0">
         <div className="w-20 h-11 sm:w-[100px] sm:h-[55px] md:w-[120px] md:h-[65px]">
           <Image
             src={image} // path relative to public/

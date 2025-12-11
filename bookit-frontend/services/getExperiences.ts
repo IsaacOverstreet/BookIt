@@ -20,8 +20,8 @@ interface ExperienceParams {
 }
 
 export interface DataType {
-  experience: ExperienceType[];
-  totalPage: number;
+  experience?: ExperienceType[];
+  totalPage?: number;
 }
 
 export const OnlyLettersSchema = z
@@ -71,22 +71,23 @@ export async function fetchExperience(
     //   console.log("Unknown error:", error);
     //   toast.error("Something went wrong");
     // }
-    handleApiError(error);
+    const message = handleApiError(error);
+    return {};
   }
 }
 
 //EXPEREINCE ID DATA
 export interface ExperienceByIdType {
-  id: string;
-  title: string;
-  location: string;
-  description: string;
-  image: string;
-  price: number;
-  tax: number;
-  quantity: number;
-  createdAt: string; // or Date if you convert
-  dates: ExperienceDate[];
+  id?: string;
+  title?: string;
+  location?: string;
+  description?: string;
+  image?: string;
+  price?: number;
+  tax?: number;
+  quantity?: number;
+  createdAt?: string; // or Date if you convert
+  dates?: ExperienceDate[];
 }
 
 export interface ExperienceDate {
@@ -123,7 +124,8 @@ export async function getExperienceById(
 
     return result;
   } catch (err) {
-    handleApiError(err);
+    const message = handleApiError(err);
+    return {};
   }
 }
 

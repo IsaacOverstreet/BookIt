@@ -4,21 +4,37 @@ import { ExperienceByIdType } from "@/services/getExperiences";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import type { UrlObject } from "url";
 
 interface OrderSummaryProp {
   details: ExperienceByIdType;
   timeId: string;
 }
 export default function OrderSummary({ details, timeId }: OrderSummaryProp) {
-  const [quantity, setQuantity] = useState(1);
-  const [subtotalPrice, setSubTotalPrice] = useState(details.price);
+  const savedQuantity = JSON.parse(localStorage.getItem("qty") || "null");
+  const [quantity, setQuantity] = useState<number>(savedQuantity || 1);
+  const [loading, setLoading] = useState(false);
+
+  const savedSubtotal = JSON.parse(
+    localStorage.getItem("subtotalPrice") || "null"
+  );
+  const [subtotalPrice, setSubTotalPrice] = useState<number>(
+    savedSubtotal || details.price
+  );
 
   const tax = subtotalPrice * (details.tax / 100);
   const initialTotal = subtotalPrice + tax;
-  const [totalPrice, setTotalPrice] = useState(initialTotal);
+
+  const savedTotalPrice = JSON.parse(
+    localStorage.getItem("totalPrice") || "null"
+  );
+  const [totalPrice, setTotalPrice] = useState<number>(
+    savedTotalPrice || initialTotal
+  );
 
   const router = useRouter();
 
+  console.log("local", localStorage);
   const handleDecrement = () => {
     if (quantity > 1) {
       setQuantity((prev) => {
@@ -48,17 +64,23 @@ export default function OrderSummary({ details, timeId }: OrderSummaryProp) {
   };
 
   const handleConfirm = async () => {
+    if (loading) return; // prevent double submission
+    setLoading(true);
+    localStorage.setItem("qty", JSON.stringify(quantity));
+    localStorage.setItem("subtotalPrice", JSON.stringify(subtotalPrice));
+    localStorage.setItem("totalPrice", JSON.stringify(totalPrice));
+
     const payload = {
       timeId,
       quantity,
     };
 
-    console.log("payload", payload);
-
     const res = await calculateTotalPrice(payload);
-    console.log("🚀 ~ handleConfirm ~ res:", res);
+
     if (res.success === true) {
-      router.push("/checkout");
+      router.push(
+        `/checkout?total=${encodeURIComponent(JSON.stringify(res.data))}`
+      );
     }
   };
 

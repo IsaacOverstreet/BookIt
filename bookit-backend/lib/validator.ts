@@ -15,18 +15,26 @@ export type PreviewSchemaType = z.infer<typeof PreviewSchema>;
 
 //promo schema
 export const ApplyPromoSchema = z.object({
-  slotId: z.string().regex(uuidRegex, { message: 'Invalid slot ID format' }),
+  timeId: z
+    .string({ message: 'Time ID must be a string' })
+    .regex(uuidRegex, { message: 'Invalid  ID format' }),
   quantity: z.preprocess(
     (val) => Number(val),
-    z.number().int().positive({ message: 'Quantity must be positive' }),
+    z
+      .number({ message: 'Quantity must be a number' })
+      .int({ message: 'Quantity must be an integer' })
+      .positive({ message: 'Quantity must be positive' }),
   ),
-  promo: z.string().min(3, { message: 'Invalid promo code' }).optional(),
+  promo: z
+    .string({ message: 'promo must be a string' })
+    .min(3, { message: 'Invalid promo code' })
+    .optional(),
 });
 export type ApplyPromoSchemaType = z.infer<typeof ApplyPromoSchema>;
 
 //booking schema
 export const BookingSchema = z.object({
-  slotId: z.string().regex(uuidRegex, { message: 'Invalid slot ID format' }),
+  timeId: z.string().regex(uuidRegex, { message: 'Invalid slot ID format' }),
   quantity: z.preprocess(
     (val) => Number(val),
     z

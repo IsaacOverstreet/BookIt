@@ -5,6 +5,7 @@ export async function getSlotAndExperience(
   tx: Prisma.TransactionClient,
   timeId: string,
 ) {
+  //get time
   const time = await tx.experienceTime.findUnique({
     where: { id: timeId },
     select: {
@@ -15,8 +16,10 @@ export async function getSlotAndExperience(
       slots: true,
     },
   });
+
   if (!time) throw new BadRequestException('time not found');
 
+  //then get date
   const date = await tx.experienceDate.findUnique({
     where: { id: time.dateId },
     select: { id: true, experienceId: true, date: true },
@@ -24,6 +27,7 @@ export async function getSlotAndExperience(
   if (!date)
     throw new BadRequestException('date associated with time not found');
 
+  //get experience
   const experience = await tx.experience.findUnique({
     where: { id: date.experienceId },
     select: { price: true, title: true },

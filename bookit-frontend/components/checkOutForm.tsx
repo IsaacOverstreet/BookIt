@@ -1,4 +1,69 @@
-export default function CheckOutForm() {
+"use client";
+
+import { CheckoutTotalType } from "@/app/checkout/page";
+import { applyPromo } from "@/services/bookingLogic";
+import { useState } from "react";
+import { debounce } from "lodash";
+
+interface CheckoutTotalProp {
+  checkoutTotal: CheckoutTotalType;
+}
+
+interface FormType {
+  name: string;
+  email: string;
+}
+
+interface DiscountSummary {
+  // discount: number;
+  // discountRate: number;
+  discountedTotal?: number;
+  discountedSubtotal?: number;
+  percentageDiscount?: number;
+  // taxAmount: number;
+  // taxRate: number;
+  // title?: string; // if you need title
+}
+
+export default function CheckOutForm({ checkoutTotal }: CheckoutTotalProp) {
+  const [form, setform] = useState<FormType>({
+    name: "",
+    email: "",
+  });
+  const [promo, setPromo] = useState<string>("");
+  const [agreed, setAgreed] = useState(false);
+  const [discount, setDiscount] = useState<DiscountSummary | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  console.log(checkoutTotal);
+
+  async function applyPromoHandler() {
+    if (loading) return;
+    setLoading(true);
+    const payload = {
+      promo,
+      timeId: checkoutTotal.timeId,
+      quantity: checkoutTotal.quantity,
+    };
+    const res = await applyPromo(payload);
+    if (!res) {
+      setLoading(false);
+      return;
+    }
+    console.log(res.data);
+
+    setDiscount({
+      discountedSubtotal: res.data?.discountedSubtotal,
+      discountedTotal: res.data?.discountTotal,
+      percentageDiscount: res.data?.discountRate,
+    });
+    setLoading(false);
+  }
+
+  const handleApplyButton = debounce(() => {
+    applyPromoHandler();
+  }, 2000);
+
   return (
     <div className=" mb-[50px] w-full flex  flex-col lg:flex-row lg:items-start lg:justify-between gap-8 lg:gap-10 px-4 sm:px-6 xl:px-0">
       {/* Left Section: Form */}
@@ -14,6 +79,8 @@ export default function CheckOutForm() {
             </label>
             <input
               type="text"
+              onChange={(e) => setform({ ...form, name: e.target.value })}
+              value={form.name}
               id="name"
               name="name"
               placeholder="Your name"
@@ -31,6 +98,8 @@ export default function CheckOutForm() {
             </label>
             <input
               type="email"
+              onChange={(e) => setform({ ...form, email: e.target.value })}
+              value={form.email}
               id="email"
               name="email"
               placeholder="Your email"
@@ -43,11 +112,16 @@ export default function CheckOutForm() {
         <div className="flex flex-col sm:flex-row w-full gap-3 justify-center">
           <input
             type="text"
+            onChange={(e) => setPromo(e.target.value)}
+            value={promo}
             name="promocode"
             placeholder="Promo code"
             className="flex-1 w-full sm:w-[70%] px-4 py-2 border bg-[#DDDDDD] border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent text-sm sm:text-base"
           />
-          <button className="px-3 py-2 sm:w-[30%] lg:w-[90px] bg-[#131313] text-white font-medium text-xs sm:text-sm md:text-base rounded-lg hover:bg-[#2a2929] transition-colors ">
+          <button
+            onClick={handleApplyButton}
+            className="px-3 py-2 sm:w-[30%] lg:w-[90px] bg-[#131313] text-white font-medium text-xs sm:text-sm md:text-base rounded-lg hover:bg-[#2a2929] transition-colors "
+          >
             Apply
           </button>
         </div>
@@ -57,6 +131,8 @@ export default function CheckOutForm() {
           <input
             type="checkbox"
             id="terms"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
             className="mt-0.5 accent-[#161616] w-4 h-4 cursor-pointer"
           />
           <label
@@ -69,46 +145,97 @@ export default function CheckOutForm() {
       </div>
 
       {/* Right Section: Details Summary */}
-      <div className=" w-full lg:w-[35%] xl:w-[30%] rounded-xl bg-[#F7F7F7] shadow-sm p-6 flex flex-col gap-5">
+      <div className="w-full lg:w-[35%] xl:w-[30%] rounded-xl bg-[#F7F7F7] shadow-sm p-6 flex flex-col gap-6">
         {/* Details Section */}
-        <div className="flex flex-col gap-3 text-sm text-gray-700">
+        <div className="flex flex-col gap-4 text-sm text-gray-700">
           <div className="flex justify-between">
             <p className="text-[#656565]">Experience</p>
-            <p className="font-medium text-black">Kayaking</p>
+            <p className="font-medium text-black text-right">
+              {checkoutTotal.title}
+            </p>
           </div>
+
           <div className="flex justify-between">
-            <p className="text-[#656565]">Date</p>
-            <p className="text-black">2025-10-22</p>
+            <p className=" text-[#656565]">Date</p>
+            <p className="text-black">
+              {new Date(checkoutTotal.date).toISOString().split("T")[0]}
+            </p>
           </div>
+
           <div className="flex justify-between">
             <p className="text-[#656565]">Time</p>
-            <p className="text-black">09:00 am</p>
+            <p className="text-black">{checkoutTotal.time}</p>
           </div>
+
           <div className="flex justify-between">
             <p className="text-[#656565]">Qty</p>
-            <p className="text-black">1</p>
+            <p className="text-black">{checkoutTotal.quantity}</p>
           </div>
-          <div className="flex justify-between">
+
+          {/* Subtotal Row */}
+          <div className="flex justify-between items-center">
             <p className="text-[#656565]">Subtotal</p>
-            <p className="text-black">₹999</p>
+
+            {discount ? (
+              <div className="flex items-center gap-2 text-right">
+                {/* Discounted price */}
+                <p className="text-black font-medium text-sm sm:text-base">
+                  ${discount.discountedSubtotal}
+                </p>
+
+                {/* Percentage */}
+                <p className="text-black text-xs">
+                  <span className="border  bg-amber-300 font-bold">
+                    %{discount.percentageDiscount} Off
+                  </span>
+                </p>
+
+                {/* Original price */}
+                <p className="text-gray-500 line-through text-xs sm:text-sm">
+                  ${checkoutTotal.subTotal}
+                </p>
+              </div>
+            ) : (
+              <p className="text-black font-medium text-sm sm:text-base">
+                ${checkoutTotal.subTotal}
+              </p>
+            )}
           </div>
+
+          {/* Taxes Row */}
           <div className="flex justify-between">
             <p className="text-[#656565]">Taxes</p>
-            <p className="text-black">₹59</p>
+            <p className="text-black">%{checkoutTotal.taxRatePercent}</p>
           </div>
         </div>
 
         {/* Divider */}
         <hr className="border-t border-gray-300" />
 
-        {/* Total */}
-        <div className="flex justify-between items-center text-base font-semibold text-black">
+        {/* TOTAL */}
+        <div className="flex justify-between items-center text-base font-semibold">
           <p>Total</p>
-          <p>₹958</p>
+
+          {discount ? (
+            <div className="flex items-center gap-2">
+              {/* Discounted total */}
+              <p className="text-black">${discount.discountedTotal}</p>
+
+              {/* Original total */}
+              <p className="text-gray-600 line-through text-sm">
+                ${checkoutTotal.total}
+              </p>
+            </div>
+          ) : (
+            <p className="text-black">${checkoutTotal.total}</p>
+          )}
         </div>
 
         {/* Pay Button */}
-        <button className="w-full bg-[#FFD643] text-black font-medium py-3 rounded-lg hover:bg-[#f5cc3a] transition">
+        <button
+          disabled={!agreed}
+          className="w-full bg-[#ffd643] text-black font-medium py-3 rounded-lg hover:bg-[#f5cc3a] transition disabled:opacity-40 disabled:cursor-not-allowed"
+        >
           Pay and Confirm
         </button>
       </div>
