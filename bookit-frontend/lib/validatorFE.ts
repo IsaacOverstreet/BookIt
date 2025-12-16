@@ -4,7 +4,7 @@ const uuidRegex =
 
 //booking schema
 export const BookingSchema = z.object({
-  slotId: z.string().regex(uuidRegex, { message: "Invalid slot ID format" }),
+  timeId: z.string().regex(uuidRegex, { message: "Invalid slot ID format" }),
   quantity: z.preprocess(
     (val) => Number(val),
     z.number().int().positive({ message: "Quantity must be a positive number" })
@@ -34,9 +34,6 @@ export const ApplyPromoSchema = z.object({
       .positive({ message: "Quantity must be positive" })
   ),
 
-  promo: z
-    .string({ message: "promo must be a string" })
-    .min(3, { message: "Invalid promo code" })
-    .optional(),
+  promo: z.string().min(3, { message: "Invalid promo code" }).optional(),
 });
 export type ApplyPromoSchemaType = z.infer<typeof ApplyPromoSchema>;

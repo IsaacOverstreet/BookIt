@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
+  type PreviewCalcuateSchemaType,
   type BookingSchemaType,
-  type PreviewSchemaType,
 } from '../../lib/validator';
 import { calculateTotals } from '../../lib/price';
 import { getSlotAndExperience } from '../../lib/slotAndExperience';
@@ -12,7 +12,7 @@ export class BookingService {
   constructor(private prisma: PrismaService) {}
 
   // calculate total for preview
-  async calculateTotalPrice(body: PreviewSchemaType) {
+  async calculateTotalPrice(body: PreviewCalcuateSchemaType) {
     const { timeId, quantity } = body;
     return await this.prisma.$transaction(async (tx) => {
       const { date, time, experience } = await getSlotAndExperience(tx, timeId);
@@ -43,7 +43,7 @@ export class BookingService {
   async createBooking(body: BookingSchemaType) {
     const { timeId, quantity, userName, userEmail, promo } = body;
     const booking = await this.prisma.$transaction(async (tx) => {
-      const { time, experience } = await getSlotAndExperience(tx, timeId);
+      const { time, date, experience } = await getSlotAndExperience(tx, timeId);
       const capacity = time.slots.length;
       if (quantity > capacity)
         throw new BadRequestException('Not enough seats available');
@@ -60,15 +60,18 @@ export class BookingService {
       });
       return await tx.booking.create({
         data: {
+          experienceId: experience.id,
+          timeId: time.id,
+          dateId: date.id,
           userName,
           userEmail,
           quantity,
           promoCode: promo ?? null,
+          totalPrice: total.discountTotal,
         },
       });
     });
     return {
-      success: true,
       bookingId: booking.id,
       totalPrice: Number(booking.totalPrice.toFixed(2)),
     };

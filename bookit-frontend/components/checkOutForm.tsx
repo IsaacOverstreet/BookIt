@@ -1,9 +1,11 @@
 "use client";
 
 import { CheckoutTotalType } from "@/app/checkout/page";
-import { applyPromo } from "@/services/bookingLogic";
+import { applyPromo, createBooking } from "@/services/bookingLogic";
 import { useState } from "react";
 import { debounce } from "lodash";
+import { useRouter } from "next/navigation";
+import { BookingSchemaType } from "@/lib/validatorFE";
 
 interface CheckoutTotalProp {
   checkoutTotal: CheckoutTotalType;
@@ -35,8 +37,6 @@ export default function CheckOutForm({ checkoutTotal }: CheckoutTotalProp) {
   const [discount, setDiscount] = useState<DiscountSummary | null>(null);
   const [loading, setLoading] = useState(false);
 
-  console.log(checkoutTotal);
-
   async function applyPromoHandler() {
     if (loading) return;
     setLoading(true);
@@ -45,8 +45,10 @@ export default function CheckOutForm({ checkoutTotal }: CheckoutTotalProp) {
       timeId: checkoutTotal.timeId,
       quantity: checkoutTotal.quantity,
     };
+
     const res = await applyPromo(payload);
-    if (!res) {
+    console.log("🚀 ~ applyPromoHandler ~ res:", res);
+    if (!res.success) {
       setLoading(false);
       return;
     }
@@ -63,6 +65,36 @@ export default function CheckOutForm({ checkoutTotal }: CheckoutTotalProp) {
   const handleApplyButton = debounce(() => {
     applyPromoHandler();
   }, 2000);
+
+  const router = useRouter();
+
+  //handle final payment
+  async function handlePayment() {
+    console.log(form);
+    const timeId = checkoutTotal.timeId;
+    const qty = checkoutTotal.quantity;
+    const userName = form.name;
+    const userEmail = form.email;
+
+    const payload: BookingSchemaType = {
+      timeId,
+      quantity: qty,
+      userName,
+      userEmail,
+    };
+    if (promo && promo.trim().length > 0) {
+      payload.promo = promo.trim();
+    }
+    console.log("🚀 ~ handlePayment ~ payload:", payload);
+
+    const res = await createBooking(payload);
+    console.log("🚀 ~ handlePayment ~ res:", res);
+    if (res.success === true) {
+      router.push(
+        `/result?done=${encodeURIComponent(JSON.stringify(res.data))}`
+      );
+    }
+  }
 
   return (
     <div className=" mb-[50px] w-full flex  flex-col lg:flex-row lg:items-start lg:justify-between gap-8 lg:gap-10 px-4 sm:px-6 xl:px-0">
@@ -119,8 +151,13 @@ export default function CheckOutForm({ checkoutTotal }: CheckoutTotalProp) {
             className="flex-1 w-full sm:w-[70%] px-4 py-2 border bg-[#DDDDDD] border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent text-sm sm:text-base"
           />
           <button
+            disabled={!promo}
             onClick={handleApplyButton}
-            className="px-3 py-2 sm:w-[30%] lg:w-[90px] bg-[#131313] text-white font-medium text-xs sm:text-sm md:text-base rounded-lg hover:bg-[#2a2929] transition-colors "
+            className={
+              promo
+                ? "px-3 py-2 sm:w-[30%] lg:w-[90px] bg-[#131313] text-white font-medium text-xs sm:text-sm md:text-base rounded-lg hover:bg-[#2a2929] transition-colors "
+                : "px-3 py-2 sm:w-[30%] lg:w-[90px] bg-[#504e4e] text-white font-medium text-xs sm:text-sm md:text-base rounded-lg hover:bg-[#2a2929] transition-colors "
+            }
           >
             Apply
           </button>
@@ -233,6 +270,7 @@ export default function CheckOutForm({ checkoutTotal }: CheckoutTotalProp) {
 
         {/* Pay Button */}
         <button
+          onClick={handlePayment}
           disabled={!agreed}
           className="w-full bg-[#ffd643] text-black font-medium py-3 rounded-lg hover:bg-[#f5cc3a] transition disabled:opacity-40 disabled:cursor-not-allowed"
         >

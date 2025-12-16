@@ -1,7 +1,12 @@
 import axios from "axios";
 
 import { handleApiError } from "@/lib/handleError";
-import { ApplyPromoSchema } from "@/lib/validatorFE";
+import {
+  ApplyPromoSchema,
+  ApplyPromoSchemaType,
+  BookingSchema,
+  BookingSchemaType,
+} from "@/lib/validatorFE";
 import { toast } from "react-toastify";
 
 interface PayloadType {
@@ -46,12 +51,6 @@ export async function calculateTotalPrice(
   }
 }
 
-interface PromoPayLoadType {
-  timeId: string;
-  quantity: number;
-  promo?: string;
-}
-
 interface PromoResponse {
   success: boolean;
   message: string;
@@ -66,14 +65,46 @@ interface Promodata {
   taxRate: number;
 }
 
+//apply promo function
 export async function applyPromo(
-  payload: PromoPayLoadType
+  payload: ApplyPromoSchemaType
 ): Promise<PromoResponse> {
   try {
     console.log(payload);
     const validated = ApplyPromoSchema.parse(payload);
     const res = await axios.post<PromoResponse>(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/promo/promo-code`,
+      validated
+    );
+    console.log("🚀 ~ res:", res.data);
+    const toastMessage = res.data.message;
+    console.log("🚀 ~ toastMessage:", toastMessage);
+    toast.success(toastMessage);
+    return res.data;
+  } catch (error) {
+    const message = handleApiError(error);
+    return {
+      success: false,
+      message,
+    };
+  }
+}
+
+interface CreateBookingResponse {
+  success: boolean;
+  message: string;
+  data?: Promodata;
+}
+
+//create booking fucntion
+export async function createBooking(
+  payload: BookingSchemaType
+): Promise<CreateBookingResponse> {
+  try {
+    console.log(payload);
+    const validated = BookingSchema.parse(payload);
+    const res = await axios.post<CreateBookingResponse>(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/calculate-total/booking`,
       validated
     );
     console.log("🚀 ~ res:", res.data);

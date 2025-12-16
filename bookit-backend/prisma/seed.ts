@@ -90,7 +90,6 @@ async function main() {
         for (let i = 0; i < 5; i++) {
           await prisma.experienceSlot.create({
             data: {
-              capacity: 5,
               timeId: newTime.id,
             },
           });

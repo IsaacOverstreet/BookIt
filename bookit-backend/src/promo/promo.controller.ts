@@ -19,7 +19,12 @@ export class PromoController {
   @Post('/promo-code')
   async applyPromoCode(@Body() body: ApplyPromoSchemaType) {
     try {
+      console.log(body);
       const validated = ApplyPromoSchema.parse(body);
+      console.log(
+        '🚀 ~ PromoController ~ applyPromoCode ~ validated:',
+        validated,
+      );
       const res = await this.promoService.applypromo(validated);
       return {
         success: true,

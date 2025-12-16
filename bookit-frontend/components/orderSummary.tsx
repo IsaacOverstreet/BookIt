@@ -3,8 +3,6 @@ import { calculateTotalPrice } from "@/services/bookingLogic";
 import { ExperienceByIdType } from "@/services/getExperiences";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "react-toastify";
-import type { UrlObject } from "url";
 
 interface OrderSummaryProp {
   details: ExperienceByIdType;

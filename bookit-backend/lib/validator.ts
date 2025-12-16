@@ -3,7 +3,7 @@ import { z } from 'zod';
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-//preview schema
+//calculate total schema
 export const PreviewSchema = z.object({
   timeId: z.string().regex(uuidRegex, { message: 'Invalid slot ID format' }),
   quantity: z.preprocess(
@@ -11,7 +11,7 @@ export const PreviewSchema = z.object({
     z.number().int().positive({ message: 'Quantity must be positive' }),
   ),
 });
-export type PreviewSchemaType = z.infer<typeof PreviewSchema>;
+export type PreviewCalcuateSchemaType = z.infer<typeof PreviewSchema>;
 
 //promo schema
 export const ApplyPromoSchema = z.object({

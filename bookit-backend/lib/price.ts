@@ -10,26 +10,30 @@ export function calculateTotals({
   quantity: number;
 }) {
   const subTotal = price * quantity;
-  const taxRate = 7.5; // (%)
-  const discountRate = 10; // (%)
+
+  const taxRate = 7.5; // %
+  const discountRate = 10; // %
 
   let discount = 0;
-  let discountTotal = 0;
-  let taxAmount = 0;
-  let discountedSubtotal = 0;
+  let discountedSubtotal = subTotal;
 
-  if (promo === 'isaac' || promo === 'overstreet') {
+  // Validate promo
+  if (promo) {
+    const validPromos = ['isaac', 'overstreet'];
+
+    if (!validPromos.includes(promo)) {
+      throw new BadRequestException('Invalid promo code');
+    }
+
     discount = subTotal * (discountRate / 100);
     discountedSubtotal = subTotal - discount;
-    console.log('🚀 ~ discountedSubtotal:', discountedSubtotal);
-    taxAmount = discountedSubtotal * (taxRate / 100);
-    discountTotal = parseFloat((discountedSubtotal + taxAmount).toFixed(2));
-  } else if (promo) {
-    throw new BadRequestException('Invalid promo code');
-  } else {
-    taxAmount = subTotal * (taxRate / 100);
-    discountTotal = parseFloat((subTotal + taxAmount).toFixed(2));
   }
+
+  // Tax is always calculated last
+  const taxAmount = discountedSubtotal * (discountRate / 100);
+
+  // Final amount to charge
+  const discountTotal = Number((discountedSubtotal + taxAmount).toFixed(2));
 
   return {
     discountedSubtotal: parseFloat(discountedSubtotal.toFixed(2)),

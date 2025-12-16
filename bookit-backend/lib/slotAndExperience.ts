@@ -30,7 +30,7 @@ export async function getSlotAndExperience(
   //get experience
   const experience = await tx.experience.findUnique({
     where: { id: date.experienceId },
-    select: { price: true, title: true },
+    select: { price: true, title: true, id: true },
   });
   if (!experience) throw new BadRequestException('experience not found');
   return { time, experience, date };

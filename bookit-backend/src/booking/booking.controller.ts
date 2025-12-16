@@ -6,24 +6,25 @@ import {
   InternalServerErrorException,
   Post,
 } from '@nestjs/common';
-import { BookingSchema, type BookingSchemaType } from '../../lib/validator';
+import {
+  BookingSchema,
+  type PreviewCalcuateSchemaType,
+  type BookingSchemaType,
+  PreviewSchema,
+} from '../../lib/validator';
 import { BookingService } from './booking.service';
 import { ZodError } from 'zod';
-
-interface CalculateTotal {
-  timeId: string;
-  quantity: number;
-}
 
 @Controller('/calculate-total')
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
 
   @Post()
-  async calculateTotalPrice(@Body() body: CalculateTotal) {
+  async calculateTotalPrice(@Body() body: PreviewCalcuateSchemaType) {
     console.log(body);
     try {
-      const res = await this.bookingService.calculateTotalPrice(body);
+      const validated = PreviewSchema.parse(body);
+      const res = await this.bookingService.calculateTotalPrice(validated);
       return {
         success: true,
         message: 'calculation successful',
@@ -40,6 +41,7 @@ export class BookingController {
     }
   }
 
+  //create a new booking
   @Post('/booking')
   async bookExperience(@Body() body: BookingSchemaType) {
     try {
@@ -47,19 +49,19 @@ export class BookingController {
       const res = await this.bookingService.createBooking(validated);
       return {
         success: true,
-        meessage: 'booking created sucessfully',
+        message: 'booking created sucessfully',
         data: res,
       };
     } catch (error) {
       console.log(error);
       if (error instanceof ZodError) {
-        throw new BadRequestException({
-          success: false,
-          type: 'VALIDATION ERROR',
-          message: 'Invalid booking data',
-          errors: error.issues,
-        });
+        const messages = error.issues.map((err) => err.message);
+        throw new BadRequestException(messages);
       }
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Unexpected server error');
     }
   }
 }
