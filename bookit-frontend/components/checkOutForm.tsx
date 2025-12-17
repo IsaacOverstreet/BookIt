@@ -6,6 +6,7 @@ import { useState } from "react";
 import { debounce } from "lodash";
 import { useRouter } from "next/navigation";
 import { BookingSchemaType } from "@/lib/validatorFE";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CheckoutTotalProp {
   checkoutTotal: CheckoutTotalType;
@@ -68,6 +69,8 @@ export default function CheckOutForm({ checkoutTotal }: CheckoutTotalProp) {
 
   const router = useRouter();
 
+  const queryClient = useQueryClient();
+
   //handle final payment
   async function handlePayment() {
     console.log(form);
@@ -93,6 +96,8 @@ export default function CheckOutForm({ checkoutTotal }: CheckoutTotalProp) {
       router.push(
         `/result?done=${encodeURIComponent(JSON.stringify(res.data))}`
       );
+      localStorage.clear();
+      // queryClient.invalidateQueries(["details", id]);
     }
   }
 

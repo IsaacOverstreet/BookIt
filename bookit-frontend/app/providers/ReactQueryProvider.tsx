@@ -20,6 +20,7 @@ export default function ReactQueryProvider({ children }: Props) {
             gcTime: 1000 * 60 * 30,
             refetchOnWindowFocus: false,
             refetchOnMount: false,
+            refetchInterval: 10000,
           },
         },
       })

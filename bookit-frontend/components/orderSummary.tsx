@@ -7,10 +7,18 @@ import { useState } from "react";
 interface OrderSummaryProp {
   details: ExperienceByIdType;
   timeId: string;
+  availableQuantity: number;
 }
-export default function OrderSummary({ details, timeId }: OrderSummaryProp) {
+export default function OrderSummary({
+  details,
+  timeId,
+  availableQuantity,
+}: OrderSummaryProp) {
   const savedQuantity = JSON.parse(localStorage.getItem("qty") || "null");
-  const [quantity, setQuantity] = useState<number>(savedQuantity || 1);
+  console.log("🚀 ~ savedQuantity:", savedQuantity);
+  const [selectedQuantity, setSelectedQuantity] = useState<number>(
+    savedQuantity || 1
+  );
   const [loading, setLoading] = useState(false);
 
   const savedSubtotal = JSON.parse(
@@ -34,8 +42,8 @@ export default function OrderSummary({ details, timeId }: OrderSummaryProp) {
 
   console.log("local", localStorage);
   const handleDecrement = () => {
-    if (quantity > 1) {
-      setQuantity((prev) => {
+    if (selectedQuantity > 1) {
+      setSelectedQuantity((prev) => {
         const newQty = prev - 1;
         const newSubtotal = details.price * newQty;
         const newTax = newSubtotal * (details.tax / 100);
@@ -48,8 +56,9 @@ export default function OrderSummary({ details, timeId }: OrderSummaryProp) {
     }
   };
   const handleIncrement = () => {
-    if (quantity === details.quantity) return;
-    setQuantity((prev) => {
+    console.log("details", details);
+    if (selectedQuantity >= availableQuantity) return;
+    setSelectedQuantity((prev) => {
       const newQty = prev + 1;
       const newSubtotal = details.price * newQty;
       const newTax = newSubtotal * (details.tax / 100);
@@ -64,13 +73,13 @@ export default function OrderSummary({ details, timeId }: OrderSummaryProp) {
   const handleConfirm = async () => {
     if (loading) return; // prevent double submission
     setLoading(true);
-    localStorage.setItem("qty", JSON.stringify(quantity));
+    localStorage.setItem("qty", JSON.stringify(selectedQuantity));
     localStorage.setItem("subtotalPrice", JSON.stringify(subtotalPrice));
     localStorage.setItem("totalPrice", JSON.stringify(totalPrice));
 
     const payload = {
       timeId,
-      quantity,
+      quantity: selectedQuantity,
     };
 
     const res = await calculateTotalPrice(payload);
@@ -110,7 +119,7 @@ export default function OrderSummary({ details, timeId }: OrderSummaryProp) {
                 -
               </button>
               <span className="w-8 text-center font-inter font-medium text-[15px] sm:text-[16px] leading-5">
-                {quantity}
+                {selectedQuantity}
               </span>
               <button
                 onClick={handleIncrement}

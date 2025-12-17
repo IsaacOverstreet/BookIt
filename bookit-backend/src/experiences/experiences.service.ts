@@ -36,14 +36,16 @@ export class ExperiencesService {
         },
       },
     });
-    const quantity = data?.dates[0].times[0]._count.slots;
+    console.log('🚀 ~ ExperiencesService ~ getExperienceById ~ data:', data);
+    // const quantity = data?.dates[0].times[0]._count.slots;
+    // const qty = data?.dates;
 
     const tax = 7.5;
     if (!data) throw new BadRequestException('Failed to get experience');
     return {
       ...data,
       tax,
-      quantity,
+      // quantity,
     };
   }
 

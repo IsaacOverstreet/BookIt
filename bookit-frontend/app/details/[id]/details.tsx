@@ -19,11 +19,13 @@ interface Params {
 }
 
 export default function Details({ id }: Params) {
+  const [availableQuantity, setAvailableQuantity] = useState<number>(0);
   const [showSummary, setShowSummary] = useState(false);
 
   const [timeId, setTimeId] = useState("");
 
   useEffect(() => {
+    localStorage.clear();
     const savedSummary = localStorage.getItem("showSummary");
     if (savedSummary !== null) setShowSummary(JSON.parse(savedSummary));
 
@@ -31,16 +33,22 @@ export default function Details({ id }: Params) {
     if (savedTime) setTimeId(savedTime);
   }, []);
 
-  const { data, error, isLoading } = useQuery<ExperienceByIdType>({
+  const { data, error, isError, isLoading } = useQuery<ExperienceByIdType>({
     queryKey: ["details", id],
     queryFn: () => getExperienceById(id),
     enabled: !!id,
+    staleTime: 5000,
+    refetchOnMount: "always",
+    refetchInterval: 5000,
   });
 
   const details = data;
   console.log(details);
 
   if (isLoading) return <Loading />;
+  if (isError) {
+    return <NotFound />;
+  }
   if (!details) return <NotFound />;
 
   return (
@@ -62,10 +70,17 @@ export default function Details({ id }: Params) {
               onSetTimeId={setTimeId}
               onShowSummary={setShowSummary}
               details={details}
+              onSetAvailableQuantity={setAvailableQuantity}
             />
           </div>
           {/* Schedule Section */}
-          {showSummary && <OrderSummary timeId={timeId} details={details} />}
+          {showSummary && (
+            <OrderSummary
+              availableQuantity={availableQuantity}
+              timeId={timeId}
+              details={details}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -8,12 +8,14 @@ interface TimeProp {
   currentSelection: SelectDateType[];
   onShowSummary: React.Dispatch<React.SetStateAction<boolean>>;
   onSetTimeId: React.Dispatch<React.SetStateAction<string>>;
+  onSetAvailableQuantity: React.Dispatch<React.SetStateAction<number>>;
 }
 export default function TimeSelector({
   currentSelection,
   details,
   onShowSummary,
   onSetTimeId,
+  onSetAvailableQuantity,
 }: TimeProp) {
   const savedTime = localStorage.getItem("selectedTime");
 
@@ -26,6 +28,11 @@ export default function TimeSelector({
     onShowSummary(true);
     onSetTimeId(id);
     setSelectedTime(id);
+    const foundQty = details.dates
+      .flatMap((t) => t.times)
+      .find((q) => q.id === id);
+    const availableQty = foundQty ? foundQty?.slots.length : 0;
+    onSetAvailableQuantity(availableQty);
     localStorage.setItem("selectedTime", id);
     localStorage.setItem("showSummary", JSON.stringify(true));
   };

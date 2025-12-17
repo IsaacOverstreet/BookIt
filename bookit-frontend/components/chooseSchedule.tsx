@@ -4,6 +4,7 @@ import { useState } from "react";
 import TimeSelector from "./timeSelector";
 
 interface ScheduleProp {
+  onSetAvailableQuantity: React.Dispatch<React.SetStateAction<number>>;
   details: ExperienceByIdType;
   onSetTimeId: React.Dispatch<React.SetStateAction<string>>;
   onShowSummary: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,6 +26,7 @@ export default function ChooseSchedule({
   details,
   onShowSummary,
   onSetTimeId,
+  onSetAvailableQuantity,
 }: ScheduleProp) {
   const savedSelection = JSON.parse(
     localStorage.getItem("currentDatesSelection") || "null"
@@ -73,6 +75,7 @@ export default function ChooseSchedule({
               currentSelection={currentSelection}
               onShowSummary={onShowSummary}
               onSetTimeId={onSetTimeId}
+              onSetAvailableQuantity={onSetAvailableQuantity}
             />
           </div>
 

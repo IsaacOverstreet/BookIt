@@ -59,35 +59,24 @@ export async function fetchExperience(
 
       return result;
     }
-  } catch (error: unknown) {
-    // if (error instanceof ZodError) {
-    //   error.issues.forEach((err) => {
-    //     toast.error(err.message);
-    //   });
-    //   console.log(error);
-    // } else if (axios.isAxiosError(error)) {
-    //   toast.error(error.response?.data?.message || "Request failed");
-    // } else {
-    //   console.log("Unknown error:", error);
-    //   toast.error("Something went wrong");
-    // }
+  } catch (error) {
     const message = handleApiError(error);
-    return {};
+    throw new Error(message);
   }
 }
 
 //EXPEREINCE ID DATA
 export interface ExperienceByIdType {
-  id?: string;
-  title?: string;
-  location?: string;
-  description?: string;
-  image?: string;
-  price?: number;
-  tax?: number;
-  quantity?: number;
-  createdAt?: string; // or Date if you convert
-  dates?: ExperienceDate[];
+  id: string;
+  title: string;
+  location: string;
+  description: string;
+  image: string;
+  price: number;
+  tax: number;
+
+  createdAt: string; // or Date if you convert
+  dates: ExperienceDate[];
 }
 
 export interface ExperienceDate {
@@ -123,9 +112,9 @@ export async function getExperienceById(
     console.log("🚀 ~ getExperienceById ~ result:", result);
 
     return result;
-  } catch (err) {
-    const message = handleApiError(err);
-    return {};
+  } catch (error) {
+    const message = handleApiError(error);
+    throw new Error(message);
   }
 }
 
