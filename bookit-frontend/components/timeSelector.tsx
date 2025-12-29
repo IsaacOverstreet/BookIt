@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SelectDateType } from "./chooseSchedule";
 import { ExperienceByIdType } from "@/services/getExperiences";
 

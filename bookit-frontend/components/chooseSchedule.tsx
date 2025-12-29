@@ -31,12 +31,10 @@ export default function ChooseSchedule({
   const savedSelection = JSON.parse(
     localStorage.getItem("currentDatesSelection") || "null"
   );
-  console.log("🚀 ~ savedSelection:", savedSelection);
+
   const [currentSelection, SetCurrentSelection] = useState<SelectDateType[]>(
     savedSelection || []
   );
-
-  console.log("🚀 ~ currentSelection:", currentSelection);
 
   return (
     <div className="mb-2.5 w-full max-w-[765px] flex flex-col gap-6 py-4 sm:py-6 md:py-8 ">
@@ -66,7 +64,7 @@ export default function ChooseSchedule({
           </div>
 
           {/* Time Picker with Slots */}
-          <div className="w-full flex flex-col gap-1.5 mt-[15px]">
+          <div className=" w-full flex flex-col gap-1.5 mt-[15px]">
             <h3 className="font-inter font-medium text-[16px] sm:text-[17px] md:text-[18px] leading-[22px] text-black">
               Choose time
             </h3>

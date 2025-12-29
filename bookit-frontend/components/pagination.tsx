@@ -33,9 +33,8 @@ export default function Pagination({
     onPageChange(newPage);
     router.push(`/?page=${newPage}`);
     scrollToTop();
-    console.log("here");
   }
-  console.log("currentPage", currentPage);
+
   return (
     <div className="flex items-center justify-center gap-4 py-6 w-full">
       <Button

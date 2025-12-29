@@ -32,7 +32,6 @@ export class ExperiencesController {
     @Query('searchParam') search: string,
   ) {
     try {
-      console.log('search', search);
       const pageNum = parseInt(page) || 1;
       const limitNum = parseInt(limit) || 10;
       const skip = (pageNum - 1) * limitNum;

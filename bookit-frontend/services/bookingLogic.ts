@@ -70,15 +70,14 @@ export async function applyPromo(
   payload: ApplyPromoSchemaType
 ): Promise<PromoResponse> {
   try {
-    console.log(payload);
     const validated = ApplyPromoSchema.parse(payload);
     const res = await axios.post<PromoResponse>(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/promo/promo-code`,
       validated
     );
-    console.log("🚀 ~ res:", res.data);
+
     const toastMessage = res.data.message;
-    console.log("🚀 ~ toastMessage:", toastMessage);
+
     toast.success(toastMessage);
     return res.data;
   } catch (error) {
@@ -101,16 +100,11 @@ export async function createBooking(
   payload: BookingSchemaType
 ): Promise<CreateBookingResponse> {
   try {
-    console.log(payload);
     const validated = BookingSchema.parse(payload);
     const res = await axios.post<CreateBookingResponse>(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/calculate-total/booking`,
       validated
     );
-    console.log("🚀 ~ res:", res.data);
-    const toastMessage = res.data.message;
-    console.log("🚀 ~ toastMessage:", toastMessage);
-    toast.success(toastMessage);
     return res.data;
   } catch (error) {
     const message = handleApiError(error);

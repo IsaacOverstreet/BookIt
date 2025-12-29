@@ -14,7 +14,7 @@ export class PromoService {
     return await this.prisma.$transaction(async (tx) => {
       const { time, experience } = await getSlotAndExperience(tx, timeId);
       const capacity = time.slots.length;
-      console.log('capa', capacity);
+
       if (quantity > capacity)
         throw new BadRequestException('Not enough seats available');
 

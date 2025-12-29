@@ -15,7 +15,7 @@ export default function OrderSummary({
   availableQuantity,
 }: OrderSummaryProp) {
   const savedQuantity = JSON.parse(localStorage.getItem("qty") || "null");
-  console.log("🚀 ~ savedQuantity:", savedQuantity);
+
   const [selectedQuantity, setSelectedQuantity] = useState<number>(
     savedQuantity || 1
   );
@@ -40,7 +40,6 @@ export default function OrderSummary({
 
   const router = useRouter();
 
-  console.log("local", localStorage);
   const handleDecrement = () => {
     if (selectedQuantity > 1) {
       setSelectedQuantity((prev) => {
@@ -56,7 +55,6 @@ export default function OrderSummary({
     }
   };
   const handleIncrement = () => {
-    console.log("details", details);
     if (selectedQuantity >= availableQuantity) return;
     setSelectedQuantity((prev) => {
       const newQty = prev + 1;

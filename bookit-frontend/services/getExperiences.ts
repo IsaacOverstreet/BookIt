@@ -1,6 +1,6 @@
-import axios, { AxiosError } from "axios";
-import { z, ZodError } from "zod";
-import { toast } from "react-toastify";
+import axios from "axios";
+import { z } from "zod";
+
 import { handleApiError } from "@/lib/handleError";
 
 export interface ExperienceType {
@@ -36,8 +36,6 @@ export async function fetchExperience(
   params: ExperienceParams = {}
 ): Promise<DataType> {
   const { page = 1, limit = 10, searchTerm } = params;
-  console.log("🚀 ~ params:", params);
-  console.log("🚀 ~ searchTerm:", searchTerm);
 
   try {
     if (!searchTerm) {
@@ -49,13 +47,12 @@ export async function fetchExperience(
       return result;
     } else {
       const validated = OnlyLettersSchema.parse(searchTerm);
-      console.log("🚀 ~ validated:", validated);
+
       const res = await axios.get<DataType>(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/experiences/search?searchParam=${validated}&page=${page}&limit=${limit}`
       );
-      console.log("🚀 ~ res:", res);
+
       const result = res.data;
-      console.log("🚀 ~ result:", result);
 
       return result;
     }
@@ -103,13 +100,11 @@ export async function getExperienceById(
   id: string
 ): Promise<ExperienceByIdType> {
   try {
-    console.log("i was ghere");
     const res = await axios.get<ExperienceByIdType>(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/experiences/${id}`
     );
     if (!res.data) throw new Error("Experience not found");
     const result = res.data;
-    console.log("🚀 ~ getExperienceById ~ result:", result);
 
     return result;
   } catch (error) {
@@ -117,24 +112,3 @@ export async function getExperienceById(
     throw new Error(message);
   }
 }
-
-// export async function getExperienceBySearch(
-//   params: string
-// ): Promise<ExperienceType> {
-//   try {
-//     const parsed = onlyLettersSchema.parse(params);
-
-//     const res = await axios.get<ExperienceType>(
-//       `${process.env.NEXT_PUBLIC_BACKEND_URL}/experiences/search?searchParam=${parsed}`
-//     );
-//     if (!res.data) throw new Error("Experience not found!");
-//     return res.data;
-//   } catch (error) {
-//     if (axios.isAxiosError(error)) {
-//       throw new Error(error.response?.data?.error || error.message);
-//     } else if (error instanceof ZodError) {
-//       toast.error("invalid search input");
-//       throw new Error("invalid search input");
-//     } else throw new Error("An unknown error occurred");
-//   }
-// }

@@ -1,11 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  fetchExperience,
-  ExperienceType,
-  DataType,
-} from "@/services/getExperiences";
+import { fetchExperience, DataType } from "@/services/getExperiences";
 import Pagination from "./pagination";
 import Card from "./card";
 import Loading from "./loadingPage";

@@ -9,29 +9,19 @@ interface dateProp {
   onCurrentSelection: (selectedDate: SelectDateType[]) => void;
 }
 
-export default function DatePicker({
-  details,
-  onCurrentSelection,
-  currentSelection,
-}: dateProp) {
+export default function DatePicker({ details, onCurrentSelection }: dateProp) {
   const savedDate = localStorage.getItem("selectedDate");
 
   const [selectedDate, setSelectedDate] = useState<string | null>(
     savedDate || null
   );
 
-  console.log("🚀 ~ selectedDate:", selectedDate);
-
   function handleOnClick(id: string) {
-    console.log("currentSelection", currentSelection);
-
     setSelectedDate(id);
-    console.log("selectedDate", selectedDate);
 
     const found = details?.dates?.find((t) => t.id === id);
 
     const times = found?.times ?? [];
-    console.log("🚀 ~ handleOnClick ~ newSelect:", times);
 
     onCurrentSelection(times);
 

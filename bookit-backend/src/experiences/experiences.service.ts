@@ -12,7 +12,6 @@ export class ExperiencesService {
       orderBy: { title: 'asc' },
     });
     const total = await this.prisma.experience.count();
-    console.log('🚀 ~ ExperiencesService ~ getAllExperiences ~ total:', total);
 
     const totalPage = Math.ceil(total / take);
     return { experience, totalPage };
@@ -36,9 +35,6 @@ export class ExperiencesService {
         },
       },
     });
-    console.log('🚀 ~ ExperiencesService ~ getExperienceById ~ data:', data);
-    // const quantity = data?.dates[0].times[0]._count.slots;
-    // const qty = data?.dates;
 
     const tax = 7.5;
     if (!data) throw new BadRequestException('Failed to get experience');
@@ -58,9 +54,6 @@ export class ExperiencesService {
     take: number;
     validatedSearch: string;
   }) {
-    console.log(skip);
-    console.log(take);
-    console.log(validatedSearch);
     const experience = await this.prisma.experience.findMany({
       where: {
         title: {
@@ -72,12 +65,11 @@ export class ExperiencesService {
       take,
       orderBy: { title: 'asc' },
     });
-    console.log('🚀 ~ ExperiencesService ~ experience:', experience);
+
     const total = await this.prisma.experience.count();
-    console.log('🚀 ~ ExperiencesService ~ getAllExperiences ~ total:', total);
 
     const totalPage = Math.ceil(total / take);
-    console.log('🚀 ~ ExperiencesService ~ totalPage:', totalPage);
+
     return { experience, totalPage };
   }
 }

@@ -29,7 +29,6 @@ export function calculateTotals({
     discountedSubtotal = subTotal - discount;
   }
 
-  // Tax is always calculated last
   const taxAmount = discountedSubtotal * (discountRate / 100);
 
   // Final amount to charge

@@ -55,8 +55,6 @@ async function main() {
       },
     });
 
-    console.log(`Created Experience: ${newExperience.title}`);
-
     // Generate 4 dates
     const dateList = [
       dayjs().add(1, 'day'),
@@ -97,8 +95,6 @@ async function main() {
       }
     }
   }
-
-  console.log('🌱 ALL SEEDING COMPLETED SUCCESSFULLY!');
 }
 
 main()

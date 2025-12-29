@@ -4,53 +4,59 @@ const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 //calculate total schema
-export const PreviewSchema = z.object({
-  timeId: z.string().regex(uuidRegex, { message: 'Invalid slot ID format' }),
-  quantity: z.preprocess(
-    (val) => Number(val),
-    z.number().int().positive({ message: 'Quantity must be positive' }),
-  ),
-});
+export const PreviewSchema = z
+  .object({
+    timeId: z.string().regex(uuidRegex, { message: 'Invalid slot ID format' }),
+    quantity: z.preprocess(
+      (val) => Number(val),
+      z.number().int().positive({ message: 'Quantity must be positive' }),
+    ),
+  })
+  .strict();
 export type PreviewCalcuateSchemaType = z.infer<typeof PreviewSchema>;
 
 //promo schema
-export const ApplyPromoSchema = z.object({
-  timeId: z
-    .string({ message: 'Time ID must be a string' })
-    .regex(uuidRegex, { message: 'Invalid  ID format' }),
-  quantity: z.preprocess(
-    (val) => Number(val),
-    z
-      .number({ message: 'Quantity must be a number' })
-      .int({ message: 'Quantity must be an integer' })
-      .positive({ message: 'Quantity must be positive' }),
-  ),
-  promo: z
-    .string({ message: 'promo must be a string' })
-    .min(3, { message: 'Invalid promo code' })
-    .optional(),
-});
+export const ApplyPromoSchema = z
+  .object({
+    timeId: z
+      .string({ message: 'Time ID must be a string' })
+      .regex(uuidRegex, { message: 'Invalid  ID format' }),
+    quantity: z.preprocess(
+      (val) => Number(val),
+      z
+        .number({ message: 'Quantity must be a number' })
+        .int({ message: 'Quantity must be an integer' })
+        .positive({ message: 'Quantity must be positive' }),
+    ),
+    promo: z
+      .string({ message: 'promo must be a string' })
+      .min(3, { message: 'Invalid promo code' })
+      .optional(),
+  })
+  .strict();
 export type ApplyPromoSchemaType = z.infer<typeof ApplyPromoSchema>;
 
 //booking schema
-export const BookingSchema = z.object({
-  timeId: z.string().regex(uuidRegex, { message: 'Invalid slot ID format' }),
-  quantity: z.preprocess(
-    (val) => Number(val),
-    z
-      .number()
-      .int()
-      .positive({ message: 'Quantity must be a positive number' }),
-  ),
-  userName: z
-    .string()
-    .min(3, { message: 'Name must be at least 3 characters long' })
-    .trim(),
-  userEmail: z
-    .string()
-    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, { message: 'Invalid email address' }),
-  promo: z.string().min(3, { message: 'Invalid promo code' }).optional(),
-});
+export const BookingSchema = z
+  .object({
+    timeId: z.string().regex(uuidRegex, { message: 'Invalid slot ID format' }),
+    quantity: z.preprocess(
+      (val) => Number(val),
+      z
+        .number()
+        .int()
+        .positive({ message: 'Quantity must be a positive number' }),
+    ),
+    userName: z
+      .string()
+      .min(3, { message: 'Name must be at least 3 characters long' })
+      .trim(),
+    userEmail: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, {
+      message: 'Invalid email address',
+    }),
+    promo: z.string().min(3, { message: 'Invalid promo code' }).optional(),
+  })
+  .strict();
 export type BookingSchemaType = z.infer<typeof BookingSchema>;
 
 //search schema

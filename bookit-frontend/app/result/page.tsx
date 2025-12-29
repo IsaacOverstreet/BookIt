@@ -1,7 +1,19 @@
 import { Check } from "lucide-react";
 import Link from "next/link";
 
-export default function Result() {
+interface ResultParams {
+  searchParams: { done: string };
+}
+
+interface BookingResult {
+  bookingId: string;
+}
+export default async function Result({ searchParams }: ResultParams) {
+  const { done } = await searchParams;
+
+  const decode = decodeURIComponent(done);
+  const data: BookingResult = JSON.parse(decode);
+
   return (
     <div className="flex   flex-col items-center justify-start w-full  h-dvh py-10 px-4 sm:px-[50px] lg:px-[115px] mt-[100px]  gap-6 bg-[#FAFAFA] text-center">
       {/* Success Icon */}
@@ -13,7 +25,9 @@ export default function Result() {
       <h1 className="text-2xl sm:text-3xl font-semibold">Booking Confirmed</h1>
 
       {/* Reference ID */}
-      <p className="text-gray-500 text-sm sm:text-base">Ref ID: HUF56&SO</p>
+      <p className="text-gray-500 text-sm sm:text-base">
+        BookingID: {data.bookingId}
+      </p>
 
       {/* Back to Home Button */}
       <Link

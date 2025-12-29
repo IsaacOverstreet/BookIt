@@ -13,6 +13,7 @@ import { ArrowLeft } from "lucide-react";
 import NotFound from "@/components/notFound";
 import Loading from "@/components/loadingPage";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Params {
   id: string;
@@ -23,6 +24,7 @@ export default function Details({ id }: Params) {
   const [showSummary, setShowSummary] = useState(false);
 
   const [timeId, setTimeId] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     localStorage.clear();
@@ -33,7 +35,7 @@ export default function Details({ id }: Params) {
     if (savedTime) setTimeId(savedTime);
   }, []);
 
-  const { data, error, isError, isLoading } = useQuery<ExperienceByIdType>({
+  const { data, isError, isLoading } = useQuery<ExperienceByIdType>({
     queryKey: ["details", id],
     queryFn: () => getExperienceById(id),
     enabled: !!id,
@@ -43,7 +45,6 @@ export default function Details({ id }: Params) {
   });
 
   const details = data;
-  console.log(details);
 
   if (isLoading) return <Loading />;
   if (isError) {
@@ -52,19 +53,22 @@ export default function Details({ id }: Params) {
   if (!details) return <NotFound />;
 
   return (
-    <div className="flex flex-col w-full px-4 sm:px-[50px] lg:px-[50px] min-h-dvh mt-[100px]  xl:px-[115px]">
+    <div className="flex flex-col w-full px-4 sm:px-[50px] lg:px-[50px] min-h-dvh mt-2.5  xl:px-[50px]">
       <div className="w-full">
         {/* Header */}
-        <div className="flex items-center gap-2 py-3">
+        <div
+          onClick={() => router.back()}
+          className="flex items-center gap-2 py-3"
+        >
           <ArrowLeft className="w-3 h-3" />
           <h3 className="font-inter font-medium text-[14px] leading-[18px] text-black">
             Details
           </h3>
         </div>
 
-        <div className="flex flex-col lg:w-full lg:flex-row xl:w-full w-full gap-5 justify-between 2xl:justify-start">
+        <div className=" flex flex-col lg:w-full lg:flex-row xl:w-full w-full gap-3 justify-between 2xl:justify-start">
           {/* Image + Order Summary */}
-          <div className="flex flex-col ">
+          <div className="flex lg:w-[64%] flex-col ">
             <FullExperienceImage details={details} />
             <ChooseSchedule
               onSetTimeId={setTimeId}
