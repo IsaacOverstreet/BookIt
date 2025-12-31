@@ -30,7 +30,7 @@ export default function ExperienceList({
   const { experience = [], totalPage = 1 } = data || {};
 
   return (
-    <div className="flex w-full flex-wrap  gap-5.5   min-h-dvh mt-[50px] ">
+    <div className="flex w-full flex-wrap  gap-5.5   min-h-dvh mt-[50px]">
       {experience?.map((exp) => (
         <Card
           key={exp.id}

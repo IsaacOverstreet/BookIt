@@ -1,76 +1,60 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
- 
 }
 
 datasource db {
   provider = "postgresql"
- 
 }
 
-
 model Experience {
-  id          String        @id @default(uuid())
+  id          String           @id @default(uuid())
   title       String
   location    String
   description String
   image       String
   price       Int
+  createdAt   DateTime         @default(now())
   tax         Float
-  createdAt   DateTime      @default(now())
-  bookings  Booking[] 
+  bookings    Booking[]
   dates       ExperienceDate[]
 }
 
 model ExperienceDate {
-  id            String          @id @default(uuid())
-  date          DateTime
-  experienceId  String
-  experience    Experience      @relation(fields: [experienceId], references: [id])
-  bookings     Booking[] 
-  times         ExperienceTime[]
+  id           String           @id @default(uuid())
+  date         DateTime
+  experienceId String
+  bookings     Booking[]
+  experience   Experience       @relation(fields: [experienceId], references: [id])
+  times        ExperienceTime[]
 }
 
 model ExperienceTime {
-  id           String         @id @default(uuid())
-  time         String
-  dateId       String
-  date         ExperienceDate @relation(fields: [dateId], references: [id])
-  bookings     Booking[] 
-  slots        ExperienceSlot[]
+  id       String           @id @default(uuid())
+  time     String
+  dateId   String
+  bookings Booking[]
+  slots    ExperienceSlot[]
+  date     ExperienceDate   @relation(fields: [dateId], references: [id])
 }
 
 model ExperienceSlot {
-  id         String         @id @default(uuid())
-  timeId     String
-  time       ExperienceTime @relation(fields: [timeId], references: [id])
+  id     String         @id @default(uuid())
+  timeId String
+  time   ExperienceTime @relation(fields: [timeId], references: [id])
 }
 
 model Booking {
-  id         String   @id @default(uuid())
-
- 
-  experience   Experience       @relation(fields: [experienceId], references: [id])
-  experienceId String
-
-  date         ExperienceDate   @relation(fields: [dateId], references: [id])
+  id           String         @id @default(uuid())
+  userName     String
+  userEmail    String
+  quantity     Int
+  promoCode    String?
+  totalPrice   Int
+  createdAt    DateTime       @default(now())
   dateId       String
-
-  time         ExperienceTime   @relation(fields: [timeId], references: [id])
+  experienceId String
   timeId       String
-
-  userName   String
-  userEmail  String
-  quantity   Int
-  promoCode  String? 
-  totalPrice Int
-  createdAt  DateTime @default(now())
-
- 
+  date         ExperienceDate @relation(fields: [dateId], references: [id])
+  experience   Experience     @relation(fields: [experienceId], references: [id])
+  time         ExperienceTime @relation(fields: [timeId], references: [id])
 }

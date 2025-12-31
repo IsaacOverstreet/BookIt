@@ -4,9 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { Search } from "./search";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 export const Navbar = () => {
   const [searchbar, setSearchbarterm] = useState("");
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   function handleclick() {
     localStorage.clear();
   }
@@ -26,9 +29,11 @@ export const Navbar = () => {
       </Link>
 
       {/* Search component */}
-      <div className="flex-1 max-w-[500px] ml-4">
-        <Search searchbar={searchbar} setSearchbarterm={setSearchbarterm} />
-      </div>
+      {isHome && (
+        <div className="flex-1 max-w-[500px] ml-4">
+          <Search searchbar={searchbar} setSearchbarterm={setSearchbarterm} />
+        </div>
+      )}
     </nav>
   );
 };
