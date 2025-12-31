@@ -3,7 +3,7 @@ import image from "../public/attachment.png";
 import Link from "next/link";
 import Image from "next/image";
 import { Search } from "./search";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { usePathname } from "next/navigation";
 
 export const Navbar = () => {
@@ -31,7 +31,9 @@ export const Navbar = () => {
       {/* Search component */}
       {isHome && (
         <div className="flex-1 max-w-[500px] ml-4">
-          <Search searchbar={searchbar} setSearchbarterm={setSearchbarterm} />
+          <Suspense>
+            <Search searchbar={searchbar} setSearchbarterm={setSearchbarterm} />
+          </Suspense>
         </div>
       )}
     </nav>

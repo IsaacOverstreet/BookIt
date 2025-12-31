@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
 
 interface searchProp {
   searchbar: string;
@@ -25,27 +24,25 @@ export const Search = ({ searchbar, setSearchbarterm }: searchProp) => {
   }
 
   return (
-    <Suspense>
-      <div className="w-full max-w-[443px] flex items-center gap-2 sm:gap-4 mx-auto px-2 sm:px-0">
-        {/* Input container */}
-        <div className="flex-1 min-h-9 sm:h-[42px] rounded-sm flex items-center gap-2 px-2 sm:px-4 bg-gray-100">
-          <input
-            type="text"
-            placeholder="Search experiences"
-            className="flex-1 bg-transparent outline-none text-xs sm:text-sm md:text-base"
-            value={searchbar}
-            onChange={(e) => setSearchbarterm(e.target.value)}
-          />
-        </div>
-
-        {/* Button */}
-        <button
-          onClick={handleSearch}
-          className="min-h-9 sm:h-[42px] bg-[#FFD643] rounded-lg px-3 sm:px-5 flex items-center justify-center font-inter font-medium text-xs sm:text-sm md:text-[14px] leading-[18px] tracking-[0%]"
-        >
-          Search
-        </button>
+    <div className="w-full max-w-[443px] flex items-center gap-2 sm:gap-4 mx-auto px-2 sm:px-0">
+      {/* Input container */}
+      <div className="flex-1 min-h-9 sm:h-[42px] rounded-sm flex items-center gap-2 px-2 sm:px-4 bg-gray-100">
+        <input
+          type="text"
+          placeholder="Search experiences"
+          className="flex-1 bg-transparent outline-none text-xs sm:text-sm md:text-base"
+          value={searchbar}
+          onChange={(e) => setSearchbarterm(e.target.value)}
+        />
       </div>
-    </Suspense>
+
+      {/* Button */}
+      <button
+        onClick={handleSearch}
+        className="min-h-9 sm:h-[42px] bg-[#FFD643] rounded-lg px-3 sm:px-5 flex items-center justify-center font-inter font-medium text-xs sm:text-sm md:text-[14px] leading-[18px] tracking-[0%]"
+      >
+        Search
+      </button>
+    </div>
   );
 };
